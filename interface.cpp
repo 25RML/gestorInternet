@@ -17,9 +17,8 @@ HANDLE hConsole{ GetStdHandle(STD_OUTPUT_HANDLE) };
 namespace selectionMaps
 {
     // ******************************* Main Menu *******************************
+
     // La id es la id del orden de la lista de opciones. Ej: lista[i] -> i = id
-    
-    
     inline selectMap newNode(int id, bool isReactive)
     {
         selectMap createdNode = new(struct List_4Way);
@@ -33,32 +32,34 @@ namespace selectionMaps
 
         return createdNode;
     }
-    
+    // Crea el mapa de opciones para el menu principal
     inline selectMap createMainMenuMap()
     {
         // Node [5]
         selectMap map = newNode(5);
         // Node [6]
         map->right = newNode(6, true);
-        // Node [4]
-        map->up = newNode(4); map->up->down = map; map->up->right = map->right;
-        map = map->up;
-        // Node [3]
-        map->up = newNode(3); map->up->down = map; map->up->right = map->right;
-        map = map->up;
-        // Node [2]
-        map->up = newNode(2); map->up->down = map; map->up->right = map->right;
-        map = map->up;
-        // Node [1]
-        map->up = newNode(1); map->up->down = map; map->up->right = map->right;
-        map = map->up;
-        // Node [0]
-        map->up = newNode(0); map->up->down = map; map->up->right = map->right;
-        map = map->up;
-        // End
+        // Nodes [4~0]
+        for (int i{ 4 }; i >= 0; --i)
+        {
+            map->up = newNode(i); map->up->down = map; map->up->right = map->right;
+            map = map->up;
+        }
         return map;
-    }/*
-    */
+    }
+    // Crea el mapa de opciones para la opcion de reportes
+    inline selectMap createReportesMap()
+    {
+        // Node [2]
+        selectMap map = newNode(2);
+        // Nodes [1~0]
+        for (int i{ 1 }; i >= 0; --i)
+        {
+            map->up = newNode(i); map->up->down = map;
+            map = map->up;
+        }
+        return map;
+    }
 }
 /*================================================================================================================================================================
                         FUNCTIONS
@@ -66,7 +67,6 @@ namespace selectionMaps
 
 COORD GetCursorPosition()
 {
-    //HANDLE hConsole{ GetStdHandle(STD_OUTPUT_HANDLE) };
     CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
     GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
     return consoleInfo.dwCursorPosition;
@@ -74,14 +74,12 @@ COORD GetCursorPosition()
 
 void gotoCOORD(COORD position)
 {
-    //HANDLE console{ GetStdHandle(STD_OUTPUT_HANDLE) };
     SetConsoleCursorPosition(hConsole, position);
 }
 
 void printColor(const std::string_view& textToPrint,const int& colorCode, const int& backgroundColor)
 {
-    //HANDLE console{ GetStdHandle(STD_OUTPUT_HANDLE) };
-    SetConsoleTextAttribute(hConsole, colorCode+16*backgroundColor); // every *15* color codes will loop
+    SetConsoleTextAttribute(hConsole, colorCode+16*backgroundColor); // every *16* color codes will loop
     std::cout << textToPrint;
     SetConsoleTextAttribute(hConsole, keys::defaultColor);
 }
@@ -91,22 +89,11 @@ void printColor(const std::string_view& textToPrint,const int& colorCode, const 
 // Imprime la pantalla principal del programa, no debe ser usado en un contexto normal.
 void printMainMenu()
 {
-    printColor(menuDefs::background, color::dBlack,color::bBlack);  // Background
-    
-    clearMainWindow();
-    COORD displayPos = { 19,13 };  // Menu Title
+    printWindow(Windows::mainWindowSizeX, Windows::mainWindowSizeY, Windows::mainWindowStartPOS,color::dBlack,color::dWhite);
+    //clearMainWindow();
     printFormat(formattedText::mainTitle, { 22,5 }, UI_Colors::mainDisplay, UI_Colors::mainBackground);
-    gotoCOORD(displayPos); printColor("========================================================================================================================", UI_Colors::mainDisplay);
-
-    printFormat(formattedText::gestionDeComputadoras, { 54,15 },UI_Colors::unselectedButtonText, UI_Colors::unselectedButton); // Print Buttons
-    printFormat(formattedText::gestionDeSesiones, { 54,20 }, UI_Colors::unselectedButtonText, UI_Colors::unselectedButton);
-    printFormat(formattedText::gestionDeClientes, { 54,25 }, UI_Colors::unselectedButtonText, UI_Colors::unselectedButton);
-    printFormat(formattedText::facturacion, { 54,30 }, UI_Colors::unselectedButtonText, UI_Colors::unselectedButton);
-    printFormat(formattedText::reservas, { 54,35 }, UI_Colors::unselectedButtonText, UI_Colors::unselectedButton);
-    printFormat(formattedText::reportes, { 54,40 }, UI_Colors::unselectedButtonText, UI_Colors::unselectedButton);
-    printFormat(formattedText::salir, { 115,38 }, UI_Colors::unselectedSButtonText, UI_Colors::unselectedSButton);
-
-
+    gotoCOORD({19,13}); printColor("========================================================================================================================", UI_Colors::mainDisplay);
+    printButtons<7,3>(selectionLists::mainMenuOptions);
 }
 
 // Imprime texto en unas coordenadas usando el struct COORD de windows.h. (COORD example = {x,y})
@@ -122,7 +109,7 @@ void printCOORD(const std::string_view& printText, const COORD& Pos)
 // Limpia la ventana principal del programa, tratarlo como un system("CLS")
 void clearMainWindow()
 {
-    COORD displayPos = g_mainWindowStartPOS;  
+    COORD displayPos{ Windows::mainWindowStartPOS };
     for (int i{ 0 }; i < 41; ++i)
     {
         gotoCOORD(displayPos);
@@ -134,9 +121,23 @@ void clearMainWindow()
     gotoCOORD(displayPos); printColor("                                                                                                                        ", keys::defaultColor, color::dWhite);
 }
 
-// Console Functions
+void printWindow(const short& sizeX, const short& sizeY, COORD pos, const int& colorFG, const int& colorBG)
+{
+    for (int i{ 0 }; i < (sizeY + 1); ++i)
+    {
+        gotoCOORD(pos);
+        printColor(std::string((sizeX), ' '), keys::defaultColor,colorFG);
+        if (i > 0) printColor("  ", keys::defaultColor, colorBG);
+        ++pos.Y;
+    }
+    pos.X += 2;
+    gotoCOORD(pos); printColor(std::string((sizeX), ' '), keys::defaultColor, colorBG);
+}
 
 
+// ************************************************ Console Functions ************************************************
+
+// Sets the size of the Console (cmd)
 void setWindowSize(int width, int height)
 {
     // Get the handle to the console
@@ -151,6 +152,7 @@ void setWindowSize(int width, int height)
     SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 }
 
+// Forbids any resizing on the console
 void lockConsole()
 {
     HWND consoleWindow = GetConsoleWindow();

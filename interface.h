@@ -50,9 +50,14 @@ namespace UI_Colors
     constexpr Color selectedButtonText{ color::dBlack };
 
     constexpr Color unselectedSButton {color::bBlack }; // Colors for Secondary Buttons
-    constexpr Color selectedSButton{ color::dGreen };
+    constexpr Color selectedSButton{ color::dRed };
     constexpr Color unselectedSButtonText{ color::dBlack };
-    constexpr Color selectedSButtonText{ color::dBlack };
+    constexpr Color selectedSButtonText{ color::dWhite };
+
+    constexpr Color unselectedTButton{ color::bBlack }; // Colors for Third Buttons
+    constexpr Color selectedTButton{ color::bYellow };
+    constexpr Color unselectedTButtonText{ color::dBlack };
+    constexpr Color selectedTButtonText{ color::dBlack };
 
     constexpr Color mainDisplay{ color::dWhite };
     constexpr Color mainBackground{ color::dBlack };
@@ -67,7 +72,7 @@ namespace formattedText         // Strings para usar con la funcion printFormat(
     };*/
     using Button = std::string_view;
     using Display = std::string_view;
-
+    // ******************************* Titulo *******************************
     constexpr Display mainTitle[7] =
     {
         {"  o888o                  t .                                      #####                             "},
@@ -78,56 +83,69 @@ namespace formattedText         // Strings para usar con la funcion printFormat(
         {" Y.   .9 Y      o  `8.   Y . # #    # #   ##    #    # #         #     #   #   #    # #      #   #  "},
         {"  Y888P  'Y88P' 'Y88P'   'bP #  ####  #    #    #####  ######     #####    #   #####  ###### #    # "}
     };
-
+    // ******************************* Main Menu *******************************
     constexpr Button gestionDeComputadoras[3] =
     {
         {" \033[C                                              \033[C "},
         {" \033[C             Gestion de Computadoras          \033[C "},
         {" \033[C                                              \033[C "}
     };
-
     constexpr Button gestionDeSesiones[3] =
     {
         {" \033[C                                              \033[C "},
         {" \033[C               Gestion de Sesiones            \033[C "},
         {" \033[C                                              \033[C "}
     };
-
     constexpr Button gestionDeClientes[3] =
     {
         {" \033[C                                              \033[C "},
         {" \033[C               Gestion de Clientes            \033[C "},
         {" \033[C                                              \033[C "}
     };
-
     constexpr Button facturacion[3] =
     {
         {" \033[C                                              \033[C "},
         {" \033[C                   Facturacion                \033[C "},
         {" \033[C                                              \033[C "}
     };
-
     constexpr Button reservas[3] =
     {
         {" \033[C                                              \033[C "},
         {" \033[C                    Reservas                  \033[C "},
         {" \033[C                                              \033[C "}
     };
-
     constexpr Button reportes[3] =
     {
         {" \033[C                                              \033[C "},
         {" \033[C                    Reportes                  \033[C "},
         {" \033[C                                              \033[C "}
     };
-
+    // ******************************* Reportes *******************************
+    constexpr Button hacerReserva[3] =
+    {
+        {" \033[C                 \033[C "},
+        {" \033[C  Hacer Reserva  \033[C "},
+        {" \033[C                 \033[C "}
+    };
+    constexpr Button verHistorial[3] =
+    {
+        {" \033[C                 \033[C "},
+        {" \033[C  Ver Historial  \033[C "},
+        {" \033[C                 \033[C "}
+    };
+    // ******************************* Uso General *******************************
     constexpr Button salir[3] =
     {
         {"                   "},
         {"       Salir       "},
         {"                   "}
     };
-
+    constexpr Button volver[3] =
+    {
+        {"                   "},
+        {"<<<<   Volver  <<<<"},
+        {"                   "}
+    };
 }
 
 namespace menuDefs  // Para usar con el printColor
@@ -197,75 +215,80 @@ namespace selectionLists
         int BGselectColor;
         int BGunselectColor;
     };
-
     // ******************************* Main Menu *******************************
-    constexpr selectionMember<3> mainMenuOptions[7]         // Esta inicializacion es horrible, lo se
-    {                       
-        {
-            {
+    constexpr selectionMember<3> mainMenuOptions[7] { // Esta inicializacion es horrible, lo se
+        {   {
                 formattedText::gestionDeComputadoras[0],
                 formattedText::gestionDeComputadoras[1],    
                 formattedText::gestionDeComputadoras[2],
             }, {54,15}, // POS
             UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
+            UI_Colors::selectedButton,UI_Colors::unselectedButton},
+        {   {
                 formattedText::gestionDeSesiones[0],
                 formattedText::gestionDeSesiones[1],
                 formattedText::gestionDeSesiones[2],
             }, {54,20}, // POS
             UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
+            UI_Colors::selectedButton,UI_Colors::unselectedButton},
+        {   {
                 formattedText::gestionDeClientes[0],
                 formattedText::gestionDeClientes[1],
                 formattedText::gestionDeClientes[2],
             }, {54,25}, // POS
             UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
+            UI_Colors::selectedButton,UI_Colors::unselectedButton},
+        {   {
                 formattedText::facturacion[0],
                 formattedText::facturacion[1],
                 formattedText::facturacion[2],
             }, {54,30}, // POS
             UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
+            UI_Colors::selectedButton,UI_Colors::unselectedButton},
+        {   {
                 formattedText::reservas[0],
                 formattedText::reservas[1],
                 formattedText::reservas[2],
             }, {54,35}, // POS
             UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
+            UI_Colors::selectedButton,UI_Colors::unselectedButton},
+        {   {
                 formattedText::reportes[0],
                 formattedText::reportes[1],
                 formattedText::reportes[2],
             }, {54,40}, // POS
             UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
+            UI_Colors::selectedButton,UI_Colors::unselectedButton},
+        {   {
                 formattedText::salir[0],
                 formattedText::salir[1],
                 formattedText::salir[2],
             }, {115,38}, // POS
             UI_Colors::selectedSButtonText,UI_Colors::unselectedSButtonText,
-            UI_Colors::selectedSButton,UI_Colors::unselectedSButton
-        }
-    };
-
+            UI_Colors::selectedSButton,UI_Colors::unselectedSButton}};
+    // ******************************* Reservas *******************************
+    constexpr selectionMember<3> reservasOptions[3]{
+        {   {
+                formattedText::hacerReserva[0],
+                formattedText::hacerReserva[1],
+                formattedText::hacerReserva[2],
+            }, {9,6}, // POS
+            UI_Colors::selectedTButtonText,UI_Colors::unselectedTButtonText,
+            UI_Colors::selectedTButton,UI_Colors::unselectedTButton},
+        {   {
+                formattedText::verHistorial[0],
+                formattedText::verHistorial[1],
+                formattedText::verHistorial[2],
+            }, {9,11}, // POS
+            UI_Colors::selectedTButtonText,UI_Colors::unselectedTButtonText,
+            UI_Colors::selectedTButton,UI_Colors::unselectedTButton},
+        {   {
+                formattedText::volver[0],
+                formattedText::volver[1],
+                formattedText::volver[2],
+            }, {10,16}, // POS
+            UI_Colors::selectedSButtonText,UI_Colors::unselectedSButtonText,
+            UI_Colors::selectedSButton,UI_Colors::unselectedSButton} };
 }
 
 namespace selectionMaps
@@ -286,11 +309,20 @@ namespace selectionMaps
     // La id es la id del orden de la lista de opciones. Ej: lista[i] -> i = id
     selectMap newNode(int id, bool isReactive = false);
     selectMap createMainMenuMap();
-    inline selectMap mainMenuMap {createMainMenuMap()};
+    selectMap createReportesMap();
+
+    inline selectMap mainMenuMap{ createMainMenuMap() };
+    inline selectMap reportesMap{ createReportesMap() };
 
 }
-// Variable Global
-constexpr COORD g_mainWindowStartPOS{ 19,4 };
+
+namespace Windows
+{
+    constexpr COORD mainWindowStartPOS{ 19,4 };
+    constexpr short mainWindowSizeX{ 120 };
+    constexpr short mainWindowSizeY{ 40 };
+}
+
 
 /*================================================================================================================================================================
                         FUNCTION DECLARATION
@@ -302,6 +334,7 @@ void printColor(const std::string_view&, const int&, const int& = 0);
 
 // Printing Functions
 void printMainMenu();
+void printWindow(const short& sizeX, const short& sizeY, COORD pos, const int& colorFG, const int& colorBG);
 void printCOORD(const std::string_view&, const COORD&);
 void clearMainWindow(); 
 // Console
@@ -323,39 +356,15 @@ void printFormat(const std::string_view(&textLine)[N], COORD Pos, int fColor, in
     gotoCOORD(returnPOS);
 
 }
-// Se encarga de permitirle al usuario elegir una opcion usando colorcitos y variables con nombres largos que no se entienden a primera vista
-template <int N, int T>     
+
+template <int N, int T>  // Se encarga de permitirle al usuario elegir una opcion usando colorcitos y variables con nombres largos que no se entienden a primera vista   
 int setSelection(const selectionLists::selectionMember<T> optionList[N], selectionMaps::selectMap& map)
 {
     int inputCH{};
-    //int translation{1};
-    // Get Max entries 
-    //int xMax{1}, yMax{1};
-
-    
-
-    /*
-    for (int i{ 0 }; i < N; ++i)
-    {
-        if (optionList[i].id[0] > xMax) xMax = optionList[i].id[0];
-        if (optionList[i].id[1] > yMax) yMax = optionList[i].id[1];
-    }*/
-    
     do
     {
         // Print Selected
         printFormat(optionList[map->id].displaySet, optionList[map->id].displayPos, optionList[map->id].FGselectColor, optionList[map->id].BGselectColor);
-        /*
-        for (int i{ 0 }; i < N; ++i)
-        {
-            if (selection[0] == optionList[i].id[0] && selection[1] == optionList[i].id[1])
-            {
-                printFormat(optionList[i].displaySet, optionList[i].displayPos, optionList[i].FGselectColor, optionList[i].BGselectColor);
-                translation = i;
-                break;
-            }
-        }*/
-
         // Select
         inputCH = _getch();
         if (inputCH == 13) break;
@@ -363,15 +372,6 @@ int setSelection(const selectionLists::selectionMember<T> optionList[N], selecti
         else
         {
             printFormat(optionList[map->id].displaySet, optionList[map->id].displayPos, optionList[map->id].FGunselectColor, optionList[map->id].BGunselectColor);
-            /*
-            for (int i{ 0 }; i < N; ++i)
-            {
-                if (selection[0] == optionList[i].id[0] && selection[1] == optionList[i].id[1])
-                {
-                    printFormat(optionList[i].displaySet, optionList[i].displayPos, optionList[i].FGunselectColor, optionList[i].BGunselectColor);
-                    break;
-                }
-            }*/
             switch (inputCH = _getch())
             {
             case keys::keyLEFT:
@@ -387,9 +387,6 @@ int setSelection(const selectionLists::selectionMember<T> optionList[N], selecti
                 }
                 else map = map->left;
 
-                /*
-                --selection[0];
-                if (selection[0] < 1) selection[0] = 1;*/
                 break;
             case keys::keyRIGHT:
 
@@ -404,9 +401,6 @@ int setSelection(const selectionLists::selectionMember<T> optionList[N], selecti
                 }
                 else map = map->right;
 
-                /*
-                ++selection[0];
-                if (selection[0] > xMax) selection[0] = xMax; */
                 break;
             case keys::keyDOWN:
 
@@ -421,9 +415,6 @@ int setSelection(const selectionLists::selectionMember<T> optionList[N], selecti
                 }
                 else map = map->down;
 
-                /*
-                ++selection[1];
-                if (selection[1] > yMax) selection[1] = yMax; */
                 break;
             case keys::keyUP:
 
@@ -438,12 +429,18 @@ int setSelection(const selectionLists::selectionMember<T> optionList[N], selecti
                 }
                 else map = map->up;
 
-                /*
-                --selection[1];
-                if (selection[1] < 1) selection[1] = 1; */
                 break;
             }
         }
     } while (1);
     return map->id;
+}
+
+template <int N, int T>
+void printButtons(const selectionLists::selectionMember<T> optionList[N])
+{
+    for (int i{ 0 }; i < N; ++i)
+    {
+        printFormat(optionList[i].displaySet, optionList[i].displayPos, optionList[i].FGunselectColor, optionList[i].BGunselectColor);
+    }
 }
