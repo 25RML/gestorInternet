@@ -5,103 +5,133 @@
 /*================================================================================================================================================================
                         STRUCTS
 ================================================================================================================================================================*/
-
-struct Computadora
+struct Fecha
 {
-    int ID;
-    float modificadorDePrecio {};
-    std::string componentes[4] {};
-    std::string estado {};
-    int tiempoDeUsoTotalSegundos {};
-
+    short year{};
+    short month{};
+    short day{};
 };
 
-//using Computadora = nodeComputadora*;
+struct Hora
+{
+    short hour{};
+    short minute{};
+};
+
+struct FullTime
+{
+    Hora hora{};
+    Fecha fecha{};
+
+    void sumarTiempo(Hora tiempoHoras)
+    {
+        if ((hora.minute += tiempoHoras.minute) >= 60)
+        {
+            hora.minute -= 60;
+            ++hora.hour;
+        }
+        if ((hora.hour += tiempoHoras.hour) >= 24)
+        {
+            hora.hour -= 24;
+            ++fecha.day;
+        }
+    }
+};
 
 template <typename T>
-struct doubleList
+struct DoubleList
 {
-    // ******************* VARIABLES *******************
+    struct Node
+    {
+        T data{};
 
-    T data{};
+        Node* prev{};
+        Node* next{};
 
-    doubleList* prev{};
-    doubleList* next{};
+    };
+
+    Node* head{};
 
     // ******************* FUNCTIONS *******************
-
-    size_t size()
+    Node* createEntry(const T& data) const
     {
-        doubleList<T>* runner{ this };
-        size_t i{ 0 };
+        Node* newNode{ new Node };
+        newNode->data = data;
+        newNode->next = nullptr;
+        newNode->prev = nullptr;
+        return newNode;
+    }
+
+    size_t getSize() const
+    {
+        Node* runner{ head };
+        size_t size{ 0 };
         while (runner)
         {
             runner = runner->next;
-            ++i;
+            ++size;
         }
-        return i;
+        return size;
     }
 
-    doubleList<T>* getAt(size_t pos)
+    Node* getAt(size_t pos) const
     {
-        if (pos < 0)
+        if (pos < 0) // Transform Negative into Positive
         {
-            pos += size();
-            if (pos < 0) return NULL;
+            pos += getSize();
+            if (pos < 0) return nullptr;
         }
-        doubleList<T>* runner{ this };
+        Node* runner{ head };
         while (runner)
         {
             if (pos == 0) break;
             runner = runner->next;
             --pos;
         }
-        if (pos > 0) return NULL;
-        return runner;
+        if (pos > 0) return nullptr; // Out of range
+        return runner;  // Normal behaviour: Returns intended pointer
     }
 
-    void append(doubleList<T>* source)
+    void append(Node* node)
     {
-        doubleList<T>* runner{ this };
-        if (!runner)
+        if (!head)
         {
-            runner = source;
+            head = node;
             return;
         }
+        Node* runner{ head };
         while (runner->next) runner = runner->next;
 
-        runner->next = source;
-        source->prev = runner;
+        runner->next = node;
+        node->prev = runner;
     }
 
-    void push(doubleList<T>* source)
+    void push(Node* node)
     {
-        if (!this)
+        if (!head)
         {
-            this = source;
+            head = node;
             return;
         }
-        source->next = this;
-        this->prev = source;
-        this = source;
+        head->prev = node;
+        node->next = head;
+        head = node;
     }
 
-    void deleteOnly(int& pos)
+    void deleteOnly(size_t pos)
     {
-        doubleList<T>* target{ getAt(pos) };
-        if (!target) return;
-        else
-        {
-            if (target->prev) target->prev->next = target->next;
-            if (target->next) target->next->prev = target->prev;
-            delete(target);
-        }
+        Node* deleteTarget{ getAt(pos) };
+        if (pos == 0) head = head->next;
+        if (!deleteTarget) return;
+        if (deleteTarget->prev) deleteTarget->prev->next = deleteTarget->next;
+        if (deleteTarget->next) deleteTarget->next->prev = deleteTarget->prev;
+        delete(deleteTarget);
     }
 
-    void deleteAll()
+    void deleteAll() const
     {
-        doubleList<T>* eraser{};
-        doubleList<T>* runner{ this };
+        Node* eraser{};
+        Node* runner{ head };
         while (runner)
         {
             eraser = runner;
@@ -111,22 +141,143 @@ struct doubleList
     }
 };
 
+template <typename T>
+struct SingleList
+{
+    struct Node
+    {
+        T data{};
+        Node* next{};
+    };
+    Node* head{};
+    //Node* traverser{ head };
+    // ******************* FUNCTIONS *******************
+    Node* createEntry(const T& data) const
+    {
+        Node* newNode{ new Node };
+        newNode->data = data;
+        newNode->next = nullptr;
+        return newNode;
+    }
+    size_t getSize() const
+    {
+        Node* runner{ head };
+        size_t size{ 0 };
+        while (runner)
+        {
+            runner = runner->next;
+            ++size;
+        }
+        return size;
+    }
+    Node* getAt(size_t pos) const
+    {
+        if (pos < 0) // Transform Negative into Positive
+        {
+            pos += getSize();
+            if (pos < 0) return nullptr; // Out of scope
+        }
+        Node* runner{ head };
+        while (runner)
+        {
+            if (pos == 0) break;
+            runner = runner->next;
+            --pos;
+        }
+        if (pos > 0) return nullptr; // Out of range
+        return runner;  // Normal behaviour: Returns intended pointer
+    }
+    void append(Node* node)
+    {
+        if (!this->head)
+        {
+            this->head = node;
+            return;
+        }
+        Node* runner{ this->head };
+        while (runner->next) runner = runner->next;
+        runner->next = node;
+    }
+    void push(Node* node)
+    {
+        if (!head)
+        {
+            head = node;
+            return;
+        }
+        node->next = head;
+        head = node;
+    }
+    void insert(Node* source, size_t pos)
+    {
+        size_t listSize = getSize();
+        if (pos < 0) {
+            pos += listSize;
+            if (pos < 0) return;
+            if (pos >= listSize) return;
+            ++pos;
+        }
+        if (pos == 0) {
+            source->next = head;
+            head = source;
+            return;
+        }
+        if (pos < listSize) {
+            Node* tempPointer = getAt(pos - 1);
+            source->next = tempPointer->next;
+            tempPointer->next = source;
+        }
+        else if (pos == listSize) append(source);
+    }
+    void deleteOnly(size_t pos)
+    {
+        if (pos == 0)
+        {
+            Node* reserve{ head };
+            head = head->next;
+            delete(reserve);
+            return;
+        }
+        Node* reserve{ getAt(pos-1) };
+        if (!(reserve->next)) return; // Does not exist
+        Node* deleteTarget{ reserve->next };
+        reserve->next = deleteTarget->next;
+        delete(deleteTarget);
+    }
+    void deleteAll() const
+    {
+        Node* eraser{};
+        Node* runner{ head };
+        while (runner)
+        {
+            eraser = runner;
+            runner = runner->next;
+            delete(eraser);
+        }
+    }
+};
+
+struct Reserva
+{
+    Fecha fecha{};
+    Hora horaInicio{};
+    Hora horaFinal{};
+};
+
+struct Computadora
+{
+    int ID;
+    float modificadorDePrecio{};
+    std::string componentes[4]{};
+    std::string estado{};
+    int tiempoDeUsoTotalSegundos{};
+    SingleList<Reserva> colaReservas{};
+
+};
+
 
 /*================================================================================================================================================================
                         FUNCTIONS
 ================================================================================================================================================================*/
-void generateComputersList(doubleList<Computadora>*& target, const int& amount);
-
-
-// ******************************************** TEMPLATES ********************************************
-template <typename T>
-doubleList<T>* createEntry(const T& data)
-{
-    doubleList<T>* newNode = new(doubleList<T>);
-    newNode->data = data;
-
-    newNode->prev = nullptr;
-    newNode->next = nullptr;
-
-    return newNode;
-}
+void generateComputersList(DoubleList<Computadora>& target, const int& amount);
+DoubleList<Computadora>::Node* getByComputerID(DoubleList<Computadora> target, const int& id);
