@@ -8,6 +8,6 @@
 
 void mainGestionClientes()
 {
-	gotoCOORD(g_mainWindowStartPOS); // Version alterna del gotoxy
+	gotoCOORD(Windows::mainWindowStartPOS); // Version alterna del gotoxy
 	std::cout << "Hello World!";
 }
