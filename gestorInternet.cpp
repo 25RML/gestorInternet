@@ -11,6 +11,7 @@
 #include "reservas.h"
 #include "reportes.h"
 
+// ********************************************* FUNCTIONS ********************************************* 
 int main()
 {
     // Opciones de Inicio para la consola
@@ -33,7 +34,6 @@ int main()
 
             clearMainWindow();      // Funcion para limpiar la pantalla
             mainGestionComputadoras();  // FUNCION PRINCIPAL
-            _getch();               // Pausar la Consola
             printMainMenu();        // Reimprimir toda la ventana principal
 
             break;

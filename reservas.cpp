@@ -1,6 +1,7 @@
 // Includes
 #include <iostream>
 
+#include "global.h"
 #include "reservas.h"
 #include "gestionComputadoras.h"
 #include "interface.h" // para el gotoCOORD()
@@ -11,16 +12,16 @@
 void mainReservas()
 {
 	//  Por motivos de testeo
-	DoubleList<Computadora> computadorasMain{};
-	generateComputersList(computadorasMain, 90);
+	//DoubleList<Computadora> computadorasMain{};
+	//generateComputersList(computadorasMain, 90);
 
 	// Imprimir Pseudo-Interfaz
 	printColor(menuDefs::background, color::dBlack, color::bBlack);  // Reset Background
 	printWindow(25, 16, {7,4},color::dBlack,color::dYellow); // Print Window
-	// Imprimir Botones
-
-	
+	printWindow(110, 40, { 39,4 }, color::dBlack, color::dBlue);
+	printWindow(60, 2, { 65,3 }, color::bAqua, color::bBlue);
 	//printButtons<3, 3>(selectionLists::reservasOptions);
+	gotoCOORD({ 78,4 }); printColor("\033[4mGESTOR DE RESERVAS DE COMPUTADORAS\033[0m", color::dBlack, color::bAqua);
 
 	gotoCOORD({ 0,0 }); // Estetico solamente, volver a 0,0
 	int inputSelection{ 0 };
@@ -28,36 +29,23 @@ void mainReservas()
 	while (continueSelection)
 	{
 		selectionMaps::g_reservasMap.printAll();
-		printWindow(110, 40, { 39,4 }, color::dBlack, color::dBlue);
-		printWindow(60, 2, { 65,3 }, color::bAqua, color::bBlue);
-		gotoCOORD({ 78,4 }); printColor("\033[4mGESTOR DE RESERVAS DE COMPUTADORAS\033[0m", color::dBlack, color::bAqua);
-
 		switch (inputSelection = selectionMaps::g_reservasMap.startSelection(true))
 		//switch (inputSelection = setSelection<3, 3>(selectionLists::reservasOptions, selectionMaps::reportesMap))
 		{
 		case 1:
 			{
 				printRectangle({ 103,8 }, 1, 36, color::bBlue, '#');
-				int idSelector{};
+				//int idSelector{};
 				do
 				{
 					printRectangle({ 104,8 }, 44, 36, color::dBlack);
 					// Selection
-					int idSelector{ selectComputer(computadorasMain, { 43,9 }, 5, 5) };		// Elegir Computadora
+					int idSelector{ selectComputer(g_registroComputadoras, { 43,9 }, 5, 5) };		// Elegir Computadora
 					if (!idSelector) break;
 					// Printing UI
 					printFormat(formattedText::Elements::computerInfo, { 106,8 }, color::dBlack, color::dBlue);
-					DoubleList<Computadora>::Node* target{ computadorasMain.getAt(idSelector - 1) };
-
-					gotoCOORD({ 107,12 }); printColor("ID : ", color::dBlue, color::dBlack); std::cout << target->data.ID;
-					gotoCOORD({ 107,13 }); printColor("Estado : ", color::dBlue, color::dBlack); std::cout << target->data.estado;
-					gotoCOORD({ 107,14 }); printColor("Mod. de Precio : ", color::dBlue, color::dBlack); std::cout << target->data.modificadorDePrecio;
-					gotoCOORD({ 107,15 }); printColor("Tiempo de Uso : ", color::dBlue, color::dBlack); std::cout << target->data.tiempoDeUsoTotalSegundos << 's';
-					gotoCOORD({ 107,16 }); printColor("Componentes : ", color::dBlue, color::dBlack);
-					gotoCOORD({ 109,17 }); std::cout << "- " << target->data.componentes[0];
-					gotoCOORD({ 109,18 }); std::cout << "- " << target->data.componentes[1];
-					gotoCOORD({ 109,19 }); std::cout << "- " << target->data.componentes[2];
-					gotoCOORD({ 109,20 }); std::cout << "- " << target->data.componentes[3];
+					DoubleList<Computadora>::Node* target{ g_registroComputadoras.getAt(idSelector - 1) };
+					mostrarInformacionComputadora(target, { 107,12 });
 					gotoCOORD({ 105,22 }); printColor(std::string(43, '#'), color::bBlue, color::dBlack);
 
 					do
@@ -146,7 +134,7 @@ void mainReservas()
 					++linePrint.Y;
 				}
 			}
-			selectComputer(computadorasMain, { 43,8 }, 5, 5);
+			selectComputer(g_registroComputadoras, { 43,9 }, 5, 5);
 			break;
 		case 3:
 			continueSelection = false;
@@ -157,7 +145,7 @@ void mainReservas()
 	// END
 
 	gotoCOORD({ 0,0 });
-	computadorasMain.deleteAll(); fflush(stdout);
+	//computadorasMain.deleteAll(); fflush(stdout);
 	printColor(menuDefs::background, color::dBlack, color::bBlack);  // Reset Background
 }
 
