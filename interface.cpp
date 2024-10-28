@@ -45,6 +45,24 @@ namespace selectionMaps
             const Button volver{ instDisplaySet<3>(formattedText::volver),{117,41}, secondaryColorSet };
         }
     }
+    namespace GestionComputadoras
+    {
+        const extern Button agregarComputadora{ instDisplaySet<3>(formattedText::agregarComputadora),{19,42},ternaryColorSet };
+        const extern Button mostrarComputadora{ instDisplaySet<3>(formattedText::mostrarComputadora),{47,42},ternaryColorSet };
+        const extern Button volverMenu{ instDisplaySet<3>(formattedText::volver),{74,42},secondaryColorSet };
+
+        namespace SubAgregar
+        {
+            const extern Button confirmar{ instDisplaySet<3>(formattedText::confirmOperation),{50,30},primaryColorSet };
+            const extern Button reintentar{ instDisplaySet<3>(formattedText::redoOperation),{75,30},primaryColorSet };
+            const extern Button volver{ instDisplaySet<3>(formattedText::volver),{85,36},quaternaryColorSet };
+        }
+        namespace SubMostrar
+        {
+            const extern Button eliminar{ instDisplaySet<3>(formattedText::eliminar),{125,25},secondaryColorSet };
+            const extern Button volver{ instDisplaySet<3>(formattedText::volver),{123,30},primaryColorSet };
+        }
+    }
 
 
     namespace Definitions
@@ -77,7 +95,6 @@ namespace selectionMaps
             map.reset();
             return map;
         }
-
         inline SelectionMap assignReservas()
         {
             SelectionMap map{};
@@ -98,7 +115,6 @@ namespace selectionMaps
             map.reset();
             return map;
         }
-
         inline SelectionMap assignReservasConfirmation()
         {
             SelectionMap map{};
@@ -112,7 +128,6 @@ namespace selectionMaps
             map.reset();
             return map;
         }
-
         inline SelectionMap assignReservasContinue()
         {
             SelectionMap map{};
@@ -126,13 +141,72 @@ namespace selectionMaps
             map.reset();
             return map;
         }
+        inline SelectionMap assignOperacionesGestionComputadoras()
+        {
+            SelectionMap map{};
+            using Direction = SelectionMap::Member::Direction;
+            // Instanciacion de los miembros
+            map.append(map.createMember(GestionComputadoras::agregarComputadora));
+            map.append(map.createMember(GestionComputadoras::mostrarComputadora));
+            map.append(map.createMember(GestionComputadoras::volverMenu));
+            // Asignacion de Rutas
+            SelectionMap::Member* target{ map.head };
+            map.reset();
+            for (int i{ 0 }; i < 2; ++i)
+            {
+                map.traveler = map.traveler->next;
+                target->linkTo(Direction::right, map.traveler);
+                target = target->next;
+            }
+            map.reset();
+            return map;
+        }
+        inline SelectionMap assignConfirmAgregarComputadoras()
+        {
+            SelectionMap map{};
+            using Direction = SelectionMap::Member::Direction;
+            // Instanciacion de los miembros
+            map.append(map.createMember(GestionComputadoras::SubAgregar::confirmar));
+            map.append(map.createMember(GestionComputadoras::SubAgregar::reintentar));
+            map.append(map.createMember(GestionComputadoras::SubAgregar::volver));
+            // Asignacion de Rutas
+            SelectionMap::Member* target{ map.head };
+            map.reset();
+            for (int i{ 0 }; i < 2; ++i)
+            {
+                map.traveler = map.traveler->next;
+                target->linkTo(Direction::right, map.traveler);
+                target = target->next;
+            }
+            target->isReactive = true;
+            map.head->linkTo(Direction::down, target, false);
+            map.head->right->linkTo(Direction::down, target, false);
+            map.reset();
+            return map;
+        }
+        inline SelectionMap assignOperacionesComputadoras()
+        {
+            SelectionMap map{};
+            using Direction = SelectionMap::Member::Direction;
+            // Instanciacion de los miembros
+            map.append(map.createMember(GestionComputadoras::SubMostrar::eliminar));
+            map.append(map.createMember(GestionComputadoras::SubMostrar::volver));
 
+            map.head->linkTo(Direction::down, map.head->next);
+
+            map.reset();
+            map.traveler = map.head->next;
+            return map;
+        }
     }
 
     inline SelectionMap g_mainMenuMap{ Definitions::assignMainMenu() };
     inline SelectionMap g_reservasMap{ Definitions::assignReservas() };
     inline SelectionMap g_confirmReservasMap{ Definitions::assignReservasConfirmation() };
     inline SelectionMap g_continueReservasMap{ Definitions::assignReservasContinue() };
+    extern SelectionMap g_operacionesGestionComputadorasMap{ Definitions::assignOperacionesGestionComputadoras() };
+    extern SelectionMap g_confirmAgregarComputadorasMap{ Definitions::assignConfirmAgregarComputadoras() };
+    extern SelectionMap g_operacionesComputadorasMap{ Definitions::assignOperacionesComputadoras() };
 
 }
 /*================================================================================================================================================================
@@ -212,6 +286,7 @@ void printWindow(const short& sizeX, const short& sizeY, COORD pos, const int& c
 
 void printRectangle(const COORD& pos, const int dimX, const int dimY, const int color, const char sample)
 {
+    COORD returnPos{ GetCursorPosition() };
     COORD printer{ pos };
     for (int i{ 0 }; i < dimY; ++i)
     {
@@ -219,7 +294,24 @@ void printRectangle(const COORD& pos, const int dimX, const int dimY, const int 
         printColor(std::string(dimX, sample), color);
         ++printer.Y;
     }
-    gotoCOORD(pos);
+    gotoCOORD(returnPos);
+}
+
+void mostrarInformacionComputadora(DoubleList<Computadora>::Node* target, COORD pos)
+{
+    COORD returnPos{ GetCursorPosition() };
+
+    gotoCOORD(pos); printColor("ID : ", color::dBlue, color::dBlack); std::cout << target->data.ID; ++pos.Y;
+    gotoCOORD(pos); printColor("Estado : ", color::dBlue, color::dBlack); std::cout << target->data.estado; ++pos.Y;
+    gotoCOORD(pos); printColor("Mod. de Precio : ", color::dBlue, color::dBlack); std::cout << target->data.modificadorDePrecio; ++pos.Y;
+    gotoCOORD(pos); printColor("Tiempo de Uso : ", color::dBlue, color::dBlack); std::cout << target->data.tiempoDeUsoTotalSegundos << 's'; ++pos.Y;
+    gotoCOORD(pos); printColor("Componentes : ", color::dBlue, color::dBlack); pos.X += 2; ++pos.Y;
+    gotoCOORD(pos); std::cout << "- " << target->data.componentes[0]; ++pos.Y;
+    gotoCOORD(pos); std::cout << "- " << target->data.componentes[1]; ++pos.Y;
+    gotoCOORD(pos); std::cout << "- " << target->data.componentes[2]; ++pos.Y;
+    gotoCOORD(pos); std::cout << "- " << target->data.componentes[3];
+
+    gotoCOORD(returnPos);
 }
 
 // ************************************************ Console Functions ************************************************
@@ -278,7 +370,7 @@ int selectComputer(DoubleList<Computadora> lista, const COORD& pos, int x, int y
     computerMap.append(computerMap.createMember({ selectionMaps::instDisplaySet<3>(pageButton),assignerPos,selectionMaps::primaryColorSet })); assignerPos.X += 7;
     computerMap.append(computerMap.createMember({ selectionMaps::instDisplaySet<3>(formattedText::pageForward),assignerPos,selectionMaps::primaryColorSet })); assignerPos.X += 8;
     computerMap.append(computerMap.createMember({ selectionMaps::instDisplaySet<3>(formattedText::pageEnd),assignerPos,selectionMaps::primaryColorSet })); assignerPos.Y += 4;
-    assignerPos.X = pos.X + 17;
+    assignerPos.X = pos.X + 6 * x - 12;
     computerMap.append(computerMap.createMember({ selectionMaps::instDisplaySet<3>(formattedText::volver),assignerPos,selectionMaps::secondaryColorSet }));
     // Mapping first keys
     computerMap.reset();
@@ -719,4 +811,65 @@ Fecha getFecha(const COORD& pos, const bool cleanup)
     if (cleanup) printRectangle(pos, 26, 11, color::dBlack);
     dateMap.deleteAll();
     return { yearDate,monthDate,dayDate };
+}
+
+std::string getInputBox(COORD pos, short size, bool onlyInt)
+{
+    COORD returnPos{ GetCursorPosition() };
+    std::string output{};
+    char input{};
+    bool valid{};
+    int sizeStr{0};
+    bool period{ false };
+
+    gotoCOORD(pos); printColor(std::string(size, ' '), color::dBlack, color::bWhite); pos.X += 1;
+    gotoCOORD(pos);
+
+    SetConsoleTextAttribute(hConsole, color::dBlack + 16 * color::bWhite); // Set Word to black color
+    do
+    {
+        valid = false;
+        input = _getch();
+
+        if (input == 13) break;
+        //46
+        if (input >= 48 && input <= 57) valid = true;
+        if (input == 46 && onlyInt)
+        {
+            if (!period)
+            {
+                valid = true;
+                period = true;
+            }
+        }
+        if (!onlyInt)
+        {
+            if ((input == 28 || input == 29) || (input >= 64 && input <= 91) || input == 93) valid = true;
+            if ((input == 45 || input == 46) || (input >= 97 && input <= 122) || input == 95 || input == 32) valid = true;
+        }
+        if (valid && sizeStr < (size - 2))
+        {
+            output.push_back(input);
+            std::cout << input;
+            ++sizeStr;
+        }
+        if (input == 8 && sizeStr>0)
+        {
+            if (output.back() == '.') period = false;
+            output.pop_back();
+            std::cout << "\b \b";
+            --sizeStr;
+        }
+
+    } while (1);
+    if (sizeStr == 0 && onlyInt)
+    {
+        std::cout << "0.00";
+        output = "0";
+    }
+
+    SetConsoleTextAttribute(hConsole, color::dBlack);
+
+    gotoCOORD(returnPos);
+    return output;
 }

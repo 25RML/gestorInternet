@@ -126,6 +126,14 @@ namespace formattedText
         " \033[C                 \033[C ",
         " \033[C  Ver Historial  \033[C ",
         " \033[C                 \033[C " };
+    constexpr std::string_view agregarComputadora[3]{
+        " \033[C                 \033[C ",
+        " \033[C     Agregar     \033[C ",
+        " \033[C                 \033[C " };
+    constexpr std::string_view mostrarComputadora[3]{
+        " \033[C                 \033[C ",
+        " \033[C     Mostrar     \033[C ",
+        " \033[C                 \033[C " };
     // ******************************* Uso General *******************************
     constexpr std::string_view salir[3]{
         "                   ",
@@ -164,6 +172,14 @@ namespace formattedText
         "*             *",
         "   CONFIRMAR   ",
         "*             *"};
+    constexpr std::string_view redoOperation[3]{
+        "*             *",
+        "   REINTENTAR  ",
+        "*             *" };
+    constexpr std::string_view eliminar[3]{
+        "*             *",
+        "   ELIMINAR    ",
+        "*             *" };
     namespace Elements
     {
         constexpr std::string_view computerInfo[3]{
@@ -174,6 +190,22 @@ namespace formattedText
             " \033[C                                     \033[C ",
             " \033[C            CREAR RESERVA            \033[C ",
             " \033[C                                     \033[C ", };
+        constexpr std::string_view addComputer[3]{
+            " \033[C                                     \033[C ",
+            " \033[C         AGREGAR COMPUTADORA         \033[C ",
+            " \033[C                                     \033[C ", };
+        constexpr std::string_view computer[11]{
+            "    INFORMACION",
+            ".o===============o.",
+            "||'             '||",
+            "||               ||",
+            "||               ||",
+            "||.             .||",
+            "'8===============8'",
+            "     //     \\\\",
+            "    //_______\\\\",
+            "",
+            "    COMPUTADORA    "};
     }
 
 }
@@ -323,6 +355,24 @@ namespace selectionMaps
             const extern Button confirmar;
             const extern Button volver;
         } 
+    }
+    namespace GestionComputadoras
+    {
+        const extern Button agregarComputadora;
+        const extern Button mostrarComputadora;
+        const extern Button volverMenu;
+
+        namespace SubAgregar
+        {
+            const extern Button confirmar;
+            const extern Button reintentar;
+            const extern Button volver;
+        }
+        namespace SubMostrar
+        {
+            const extern Button eliminar;
+            const extern Button volver;
+        }
     }
 
     // ***************************************************************** STRUCT *****************************************************************
@@ -525,12 +575,18 @@ namespace selectionMaps
         inline SelectionMap assignReservas();
         inline SelectionMap assignReservasConfirmation();
         inline SelectionMap assignReservasContinue();
+        inline SelectionMap assignOperacionesGestionComputadoras();
+        inline SelectionMap assignConfirmAgregarComputadoras();
+        inline SelectionMap assignOperacionesComputadoras();
     }
     // ***************************************************************** DEFINICIONES *****************************************************************
     extern SelectionMap g_mainMenuMap;
     extern SelectionMap g_reservasMap;
     extern SelectionMap g_confirmReservasMap;
     extern SelectionMap g_continueReservasMap;
+    extern SelectionMap g_operacionesGestionComputadorasMap;
+    extern SelectionMap g_confirmAgregarComputadorasMap;
+    extern SelectionMap g_operacionesComputadorasMap;
 
 
 }
@@ -552,11 +608,13 @@ void printWindow(const short& sizeX, const short& sizeY, COORD pos, const int& c
 void printCOORD(const std::string_view&, const COORD&);
 void clearMainWindow(); 
 void printRectangle(const COORD& pos, const int dimX, const int dimY, const int color, const char sample = ' ');
+void mostrarInformacionComputadora(DoubleList<Computadora>::Node* target, COORD pos);
 // Console
 void setWindowSize(int, int);
 void lockConsole();
 Fecha getFecha(const COORD& pos, const bool cleanup = false);
 Hora getHora(const COORD& pos, const bool cleanup = false);
+std::string getInputBox(COORD pos, short size, bool onlyInt = false);
 // ********************************************** Templates ***********************************************
 
 template <size_t N>     // Print Format using size N
