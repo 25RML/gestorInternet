@@ -1,8 +1,23 @@
-#pragma once
+#ifndef INTERFACE_H
+#define INTERFACE_H
+
+
 // Includes 
 #include <windows.h>
 #include <conio.h>
 #include <string_view>
+#include "tempFile.h"
+
+//#include <iostream>
+
+/*================================================================================================================================================================
+                        FUNCTION DECLARATION
+================================================================================================================================================================*/
+// Coords
+COORD GetCursorPosition();
+void gotoCOORD(COORD);
+void printColor(const std::string_view&, const int&, const int& = 0);
+
 
 /*================================================================================================================================================================
                         NAMESPACES
@@ -50,24 +65,23 @@ namespace UI_Colors
     constexpr Color selectedButtonText{ color::dBlack };
 
     constexpr Color unselectedSButton {color::bBlack }; // Colors for Secondary Buttons
-    constexpr Color selectedSButton{ color::dGreen };
+    constexpr Color selectedSButton{ color::dRed };
     constexpr Color unselectedSButtonText{ color::dBlack };
-    constexpr Color selectedSButtonText{ color::dBlack };
+    constexpr Color selectedSButtonText{ color::dWhite };
+
+    constexpr Color unselectedTButton{ color::bBlack }; // Colors for Third Buttons
+    constexpr Color selectedTButton{ color::bYellow };
+    constexpr Color unselectedTButtonText{ color::dBlack };
+    constexpr Color selectedTButtonText{ color::dBlack };
 
     constexpr Color mainDisplay{ color::dWhite };
     constexpr Color mainBackground{ color::dBlack };
 }
 
-namespace formattedText         // Strings para usar con la funcion printFormat()
+namespace formattedText
 {
-    /*struct fString {    // Definicion de las variables fString
-        std::string_view storeText;
-        int fColor;
-        int bColor;
-    };*/
-    using Button = std::string_view;
     using Display = std::string_view;
-
+    // ******************************* Titulo *******************************
     constexpr Display mainTitle[7] =
     {
         {"  o888o                  t .                                      #####                             "},
@@ -78,55 +92,89 @@ namespace formattedText         // Strings para usar con la funcion printFormat(
         {" Y.   .9 Y      o  `8.   Y . # #    # #   ##    #    # #         #     #   #   #    # #      #   #  "},
         {"  Y888P  'Y88P' 'Y88P'   'bP #  ####  #    #    #####  ######     #####    #   #####  ###### #    # "}
     };
-
-    constexpr Button gestionDeComputadoras[3] =
+    // ******************************* Main Menu *******************************
+    constexpr std::string_view gestionDeComputadoras[3]{
+        " \033[C                                              \033[C ",
+        " \033[C             Gestion de Computadoras          \033[C ",
+        " \033[C                                              \033[C " };
+    constexpr std::string_view gestionDeSesiones[3]{
+        " \033[C                                              \033[C ",
+        " \033[C               Gestion de Sesiones            \033[C ",
+        " \033[C                                              \033[C " };
+    constexpr std::string_view gestionDeClientes[3]{
+        " \033[C                                              \033[C ",
+        " \033[C               Gestion de Clientes            \033[C ",
+        " \033[C                                              \033[C " };
+    constexpr std::string_view facturacion[3]{
+        " \033[C                                              \033[C ",
+        " \033[C                   Facturacion                \033[C ",
+        " \033[C                                              \033[C " };
+    constexpr std::string_view reservas[3]{
+        " \033[C                                              \033[C ",
+        " \033[C                    Reservas                  \033[C ",
+        " \033[C                                              \033[C " };
+    constexpr std::string_view reportes[3]{
+        " \033[C                                              \033[C ",
+        " \033[C                    Reportes                  \033[C ",
+        " \033[C                                              \033[C " };
+    // ******************************* Reportes *******************************
+    constexpr std::string_view hacerReserva[3]{
+        " \033[C                 \033[C ",
+        " \033[C  Hacer Reserva  \033[C ",
+        " \033[C                 \033[C " };
+    constexpr std::string_view verHistorial[3]{
+        " \033[C                 \033[C ",
+        " \033[C  Ver Historial  \033[C ",
+        " \033[C                 \033[C " };
+    // ******************************* Uso General *******************************
+    constexpr std::string_view salir[3]{
+        "                   ",
+        "       Salir       ",
+        "                   " };
+    constexpr std::string_view volver[3]{
+        "                   ",
+        "<<<<   Volver  <<<<",
+        "                   " };
+    // ******************************* Navegacion de Interfaz *******************************
+    constexpr std::string_view pageStart[3]{
+        "      ",
+        "  <<  ",
+        "      " };
+    constexpr std::string_view pageBack[3]{
+        "     ",
+        "  <  ",
+        "     " };
+    constexpr std::string_view pageForward[3]{
+        "     ",
+        "  >  ",
+        "     " };
+    constexpr std::string_view pageEnd[3]{
+        "      ",
+        "  >>  ",
+        "      " };
+    constexpr std::string_view moveUp[1]{
+        "  AA  " };
+    constexpr std::string_view moveDown[1]{
+        "  VV  " };
+    constexpr std::string_view moveUp_wide[1]{
+        "   AA   " };
+    constexpr std::string_view moveDown_wide[1]{
+        "   VV   " };
+    constexpr std::string_view confirmOperation[3]{
+        "*             *",
+        "   CONFIRMAR   ",
+        "*             *"};
+    namespace Elements
     {
-        {" \033[C                                              \033[C "},
-        {" \033[C             Gestion de Computadoras          \033[C "},
-        {" \033[C                                              \033[C "}
-    };
-
-    constexpr Button gestionDeSesiones[3] =
-    {
-        {" \033[C                                              \033[C "},
-        {" \033[C               Gestion de Sesiones            \033[C "},
-        {" \033[C                                              \033[C "}
-    };
-
-    constexpr Button gestionDeClientes[3] =
-    {
-        {" \033[C                                              \033[C "},
-        {" \033[C               Gestion de Clientes            \033[C "},
-        {" \033[C                                              \033[C "}
-    };
-
-    constexpr Button facturacion[3] =
-    {
-        {" \033[C                                              \033[C "},
-        {" \033[C                   Facturacion                \033[C "},
-        {" \033[C                                              \033[C "}
-    };
-
-    constexpr Button reservas[3] =
-    {
-        {" \033[C                                              \033[C "},
-        {" \033[C                    Reservas                  \033[C "},
-        {" \033[C                                              \033[C "}
-    };
-
-    constexpr Button reportes[3] =
-    {
-        {" \033[C                                              \033[C "},
-        {" \033[C                    Reportes                  \033[C "},
-        {" \033[C                                              \033[C "}
-    };
-
-    constexpr Button salir[3] =
-    {
-        {"                   "},
-        {"       Salir       "},
-        {"                   "}
-    };
+        constexpr std::string_view computerInfo[3]{
+            " \033[C                                     \033[C ",
+            " \033[C    INFORMACION DE LA COMPUTADORA    \033[C ",
+            " \033[C                                     \033[C ",};
+        constexpr std::string_view makeReserve[3]{
+            " \033[C                                     \033[C ",
+            " \033[C            CREAR RESERVA            \033[C ",
+            " \033[C                                     \033[C ", };
+    }
 
 }
 
@@ -185,129 +233,330 @@ namespace menuDefs  // Para usar con el printColor
                                                                                                                                                                )";
 }
 
-namespace selectionLists
-{
-    template <int N>
-    struct selectionMember
-    {
-        std::string_view displaySet[N]; // N define el numero de lineas de texto de un display de una opcion
-        COORD displayPos;
-        int FGselectColor;
-        int FGunselectColor;
-        int BGselectColor;
-        int BGunselectColor;
-    };
-
-    // ******************************* Main Menu *******************************
-    constexpr selectionMember<3> mainMenuOptions[7]         // Esta inicializacion es horrible, lo se
-    {                       
-        {
-            {
-                formattedText::gestionDeComputadoras[0],
-                formattedText::gestionDeComputadoras[1],    
-                formattedText::gestionDeComputadoras[2],
-            }, {54,15}, // POS
-            UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
-                formattedText::gestionDeSesiones[0],
-                formattedText::gestionDeSesiones[1],
-                formattedText::gestionDeSesiones[2],
-            }, {54,20}, // POS
-            UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
-                formattedText::gestionDeClientes[0],
-                formattedText::gestionDeClientes[1],
-                formattedText::gestionDeClientes[2],
-            }, {54,25}, // POS
-            UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
-                formattedText::facturacion[0],
-                formattedText::facturacion[1],
-                formattedText::facturacion[2],
-            }, {54,30}, // POS
-            UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
-                formattedText::reservas[0],
-                formattedText::reservas[1],
-                formattedText::reservas[2],
-            }, {54,35}, // POS
-            UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
-                formattedText::reportes[0],
-                formattedText::reportes[1],
-                formattedText::reportes[2],
-            }, {54,40}, // POS
-            UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,
-            UI_Colors::selectedButton,UI_Colors::unselectedButton
-        },
-        {
-            {
-                formattedText::salir[0],
-                formattedText::salir[1],
-                formattedText::salir[2],
-            }, {115,38}, // POS
-            UI_Colors::selectedSButtonText,UI_Colors::unselectedSButtonText,
-            UI_Colors::selectedSButton,UI_Colors::unselectedSButton
-        }
-    };
-
-}
-
 namespace selectionMaps
 {
-    struct List_4Way
+    // Selection Maps
+
+    struct ColorSet 
     {
-        int id;
-        bool isReactive;
-
-        List_4Way* left;
-        List_4Way* right;
-        List_4Way* up;
-        List_4Way* down;
+        int FGselectColor{};
+        int FGunselectColor{};
+        int BGselectColor{};
+        int BGunselectColor{};
     };
-    using selectMap = List_4Way*;
+    // ***************************************************************** DEFINICIONES *****************************************************************
+    constexpr ColorSet primaryColorSet{ UI_Colors::selectedButtonText,UI_Colors::unselectedButtonText,UI_Colors::selectedButton,UI_Colors::unselectedButton };
+    constexpr ColorSet secondaryColorSet{ UI_Colors::selectedSButtonText,UI_Colors::unselectedSButtonText,UI_Colors::selectedSButton,UI_Colors::unselectedSButton };
+    constexpr ColorSet ternaryColorSet{ UI_Colors::selectedTButtonText,UI_Colors::unselectedTButtonText,UI_Colors::selectedTButton,UI_Colors::unselectedTButton };
+    constexpr ColorSet quaternaryColorSet{ color::bGreen,color::dWhite,color::dBlack,color::dBlack };
+    // ***************************************************************** STRUCT *****************************************************************
+    struct Button
+    {
+        SingleList<std::string_view> displaySet{};
+        COORD displayPos{};
+        ColorSet colors{};
+        // Functions
+        void print(bool highlight=false) const
+        {
+            COORD returnPOS{ GetCursorPosition() };
+            short yCoord{ displayPos.Y };
+            SingleList<std::string_view> runnerSet{ displaySet };
+            
+            while (runnerSet.head)
+            {   
+                gotoCOORD({ displayPos.X ,yCoord });
+                if (highlight) printColor(runnerSet.head->data, colors.FGselectColor, colors.BGselectColor);
+                else printColor(runnerSet.head->data, colors.FGunselectColor, colors.BGunselectColor);
+                ++yCoord;
+                runnerSet.head = runnerSet.head->next;
+            }
+            gotoCOORD(returnPOS);
 
-    // ******************************* Main Menu *******************************
-    // La id es la id del orden de la lista de opciones. Ej: lista[i] -> i = id
-    selectMap newNode(int id, bool isReactive = false);
-    selectMap createMainMenuMap();
-    inline selectMap mainMenuMap {createMainMenuMap()};
+            //else printColor("NoHead!", 10, 9);
+            //printColor("Print!", 10, 8);
+        }
+    };
+    // ***************************************************************** FUNCIONES *****************************************************************
+    template<int N>
+    const SingleList<std::string_view> instDisplaySet(const std::string_view list[N])
+    {
+        SingleList<std::string_view> data;
+        for (int i{ 0 }; i < N; ++i)
+        {
+            data.append(data.createEntry(list[i]));
+        }
+        return data;
+    }
+    template<int N>
+    const SingleList<std::string_view> instDisplaySet(const std::string list[N])
+    {
+        SingleList<std::string> data;
+        for (int i{ 0 }; i < N; ++i)
+        {
+            data.append(data.createEntry(list[i]));
+        }
+        return data;
+    }
+    // ***************************************************************** DEFINICIONES *****************************************************************
+    namespace MainMenu
+    {
+        const extern Button gestionDeComputadoras;
+        const extern Button gestionDeSesiones;
+        const extern Button gestionDeClientes;
+        const extern Button facturacion;
+        const extern Button reservas;
+        const extern Button reportes;
+        const extern Button salir;
+    }
+
+    namespace Reservas
+    {
+        const extern Button hacerReservas;
+        const extern Button verHistorial;
+        const extern Button volver;
+
+        const extern Button confirmReserva;
+        const extern Button cancelarReserva;
+
+        namespace SubConfirmar
+        {
+            const extern Button confirmar;
+            const extern Button volver;
+        } 
+    }
+
+    // ***************************************************************** STRUCT *****************************************************************
+    struct SelectionMap
+    {
+        struct Member
+        {
+            enum class Direction
+            {
+                right,
+                left,
+                down,
+                up
+            };
+
+            Button data{};
+            // Settings
+            bool isReactive{ false };
+            bool enabled{ true };
+            // Movements
+            Member* left{};
+            Member* right{};
+            Member* up{};
+            Member* down{};
+
+            Member* next{};
+
+            // Functions
+
+            void linkTo(const Direction point, Member* const target, const bool both = true)
+            {
+                switch (point)
+                {
+                case Direction::right:
+                    right = target;
+                    if (both) target->left = this;
+                    break;
+                case Direction::left:
+                    left = target;
+                    if (both) target->right = this;
+                    break;
+                case Direction::down:
+                    down = target;
+                    if (both) target->up = this;
+                    break;
+                case Direction::up:
+                    up = target;
+                    if (both) target->down = this;
+                    break;
+                default:
+                    break;
+                }
+            }
+        };
+        Member* head{};
+        Member* traveler{ head };
+
+        // Functions
+        Member* createMember(const Button& buttonData) const
+        {
+            Member* node = new(struct Member);
+            node->data = buttonData;
+            return node;
+        }
+        void append(Member* const member)
+        {
+            if (!head)
+            {
+                head = member;
+                return;
+            }
+            Member* runner{ head };
+            while (runner->next) runner = runner->next;
+            runner->next = member;
+        }
+        size_t getSize()
+        {
+            Member* runner{ head };
+            size_t size{ 0 };
+            while (runner)
+            {
+                runner = runner->next;
+                ++size;
+            }
+            return size;
+        }
+        Member* const getAt(size_t pos)
+        {
+            if (pos < 0) // Transform Negative into Positive
+            {
+                pos += getSize();
+                if (pos < 0) return nullptr; // Out of scope
+            }
+            Member* runner{ head };
+            while (runner)
+            {
+                if (pos == 0) break;
+                runner = runner->next;
+                --pos;
+            }
+            if (pos > 0) return nullptr; // Out of range
+            return runner;  // Normal behaviour: Returns intended pointer
+        }
+
+        // Imprime todo el mapa, falta rework
+        void printAll() const
+        {
+            Member* runner{ head };
+            while (runner)
+            {
+                runner->data.print();
+                runner = runner->next;
+            }
+        }
+        void deleteAll() const
+        {
+            Member* eraser{};
+            Member* runner{ head };
+            while (runner)
+            {
+                eraser = runner;
+                runner = runner->next;
+                eraser->data.displaySet.deleteAll();
+                delete(eraser);
+
+                
+            }
+        }
+
+        void move(size_t steps)
+        {
+            while (steps > 0)
+            {
+                if (!traveler) return;
+                traveler = traveler->next;
+                --steps;
+            }
+        }
+        void reset()
+        {
+            traveler = head;
+        }
+        // Set Selection
+        int startSelection(bool reset=false)
+        {
+            if (reset) this->reset();
+            if (!traveler) return 0;
+            int inputCH{};
+            do
+            {
+                // Print Selected
+                traveler->data.print(true);
+                // Select
+                inputCH = _getch();
+                if (inputCH == 13) break;
+                else if (inputCH && inputCH != 224);
+                else
+                {
+                    traveler->data.print();
+                    switch (inputCH = _getch())
+                    {
+                    case keys::keyLEFT:
+                        if (!traveler->left || !traveler->left->enabled) break;
+                        else if (traveler->left->isReactive) traveler->left->right = traveler;
+                        traveler = traveler->left;
+                        break;
+                    case keys::keyRIGHT:
+                        if (!traveler->right || !traveler->right->enabled) break;
+                        else if (traveler->right->isReactive) traveler->right->left = traveler;
+                        traveler = traveler->right;
+                        break;
+                    case keys::keyDOWN:
+                        if (!traveler->down || !traveler->down->enabled) break;
+                        else if (traveler->down->isReactive) traveler->down->up = traveler;
+                        traveler = traveler->down;
+                        break;
+                    case keys::keyUP:
+                        if (!traveler->up || !traveler->up->enabled) break;
+                        else if (traveler->up->isReactive) traveler->up->down = traveler;
+                        traveler = traveler->up;
+                        break;
+                    }
+                }
+            } while (1);
+
+            Member* reserve{ head };
+            int output{ 1 };
+            while (traveler != reserve)
+            {
+                reserve = reserve->next;
+                ++output;
+            }
+            return output;
+        }
+    };
+    // ***************************************************************** FUNCIONES *****************************************************************
+    namespace Definitions
+    {
+        inline SelectionMap assignMainMenu();
+        inline SelectionMap assignReservas();
+        inline SelectionMap assignReservasConfirmation();
+        inline SelectionMap assignReservasContinue();
+    }
+    // ***************************************************************** DEFINICIONES *****************************************************************
+    extern SelectionMap g_mainMenuMap;
+    extern SelectionMap g_reservasMap;
+    extern SelectionMap g_confirmReservasMap;
+    extern SelectionMap g_continueReservasMap;
+
 
 }
-// Variable Global
-constexpr COORD g_mainWindowStartPOS{ 19,4 };
+
+namespace Windows
+{
+    constexpr COORD mainWindowStartPOS{ 19,4 };
+    constexpr short mainWindowSizeX{ 120 };
+    constexpr short mainWindowSizeY{ 40 };
+}
+
 
 /*================================================================================================================================================================
                         FUNCTION DECLARATION
 ================================================================================================================================================================*/
-// Coords
-COORD GetCursorPosition();
-void gotoCOORD(COORD);
-void printColor(const std::string_view&, const int&, const int& = 0);
-
 // Printing Functions
 void printMainMenu();
+void printWindow(const short& sizeX, const short& sizeY, COORD pos, const int& colorFG, const int& colorBG);
 void printCOORD(const std::string_view&, const COORD&);
 void clearMainWindow(); 
+void printRectangle(const COORD& pos, const int dimX, const int dimY, const int color, const char sample = ' ');
 // Console
 void setWindowSize(int, int);
 void lockConsole();
-
+Fecha getFecha(const COORD& pos, const bool cleanup = false);
+Hora getHora(const COORD& pos, const bool cleanup = false);
 // ********************************************** Templates ***********************************************
 
 template <size_t N>     // Print Format using size N
@@ -323,127 +572,8 @@ void printFormat(const std::string_view(&textLine)[N], COORD Pos, int fColor, in
     gotoCOORD(returnPOS);
 
 }
-// Se encarga de permitirle al usuario elegir una opcion usando colorcitos y variables con nombres largos que no se entienden a primera vista
-template <int N, int T>     
-int setSelection(const selectionLists::selectionMember<T> optionList[N], selectionMaps::selectMap& map)
-{
-    int inputCH{};
-    //int translation{1};
-    // Get Max entries 
-    //int xMax{1}, yMax{1};
 
-    
+int selectComputer(DoubleList<Computadora> lista, const COORD& pos, int x, int y);
 
-    /*
-    for (int i{ 0 }; i < N; ++i)
-    {
-        if (optionList[i].id[0] > xMax) xMax = optionList[i].id[0];
-        if (optionList[i].id[1] > yMax) yMax = optionList[i].id[1];
-    }*/
-    
-    do
-    {
-        // Print Selected
-        printFormat(optionList[map->id].displaySet, optionList[map->id].displayPos, optionList[map->id].FGselectColor, optionList[map->id].BGselectColor);
-        /*
-        for (int i{ 0 }; i < N; ++i)
-        {
-            if (selection[0] == optionList[i].id[0] && selection[1] == optionList[i].id[1])
-            {
-                printFormat(optionList[i].displaySet, optionList[i].displayPos, optionList[i].FGselectColor, optionList[i].BGselectColor);
-                translation = i;
-                break;
-            }
-        }*/
 
-        // Select
-        inputCH = _getch();
-        if (inputCH == 13) break;
-        else if (inputCH && inputCH != 224);
-        else
-        {
-            printFormat(optionList[map->id].displaySet, optionList[map->id].displayPos, optionList[map->id].FGunselectColor, optionList[map->id].BGunselectColor);
-            /*
-            for (int i{ 0 }; i < N; ++i)
-            {
-                if (selection[0] == optionList[i].id[0] && selection[1] == optionList[i].id[1])
-                {
-                    printFormat(optionList[i].displaySet, optionList[i].displayPos, optionList[i].FGunselectColor, optionList[i].BGunselectColor);
-                    break;
-                }
-            }*/
-            switch (inputCH = _getch())
-            {
-            case keys::keyLEFT:
-
-                if (map->left == NULL) break;
-                else if (map->left->isReactive) map->left->right = map;
-
-                if (map->isReactive)
-                {
-                    selectionMaps::selectMap tempMap = map;
-                    map = map->left;
-                    tempMap->left = NULL;
-                }
-                else map = map->left;
-
-                /*
-                --selection[0];
-                if (selection[0] < 1) selection[0] = 1;*/
-                break;
-            case keys::keyRIGHT:
-
-                if (map->right == NULL) break;
-                else if (map->right->isReactive) map->right->left = map;
-
-                if (map->isReactive)
-                {
-                    selectionMaps::selectMap tempMap = map;
-                    map = map->right;
-                    tempMap->right = NULL;
-                }
-                else map = map->right;
-
-                /*
-                ++selection[0];
-                if (selection[0] > xMax) selection[0] = xMax; */
-                break;
-            case keys::keyDOWN:
-
-                if (map->down == NULL) break;
-                else if (map->down->isReactive) map->down->up = map;
-
-                if (map->isReactive)
-                {
-                    selectionMaps::selectMap tempMap = map;
-                    map = map->down;
-                    tempMap->down = NULL;
-                }
-                else map = map->down;
-
-                /*
-                ++selection[1];
-                if (selection[1] > yMax) selection[1] = yMax; */
-                break;
-            case keys::keyUP:
-
-                if (map->up == NULL) break;
-                else if (map->up->isReactive) map->up->down = map;
-
-                if (map->isReactive)
-                {
-                    selectionMaps::selectMap tempMap = map;
-                    map = map->up;
-                    tempMap->up = NULL;
-                }
-                else map = map->up;
-
-                /*
-                --selection[1];
-                if (selection[1] < 1) selection[1] = 1; */
-                break;
-            }
-        }
-    } while (1);
-    return map->id;
-}
+#endif // !INTERFACE_H
