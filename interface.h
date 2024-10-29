@@ -98,24 +98,24 @@ namespace formattedText
         " \033[C             Gestion de Computadoras          \033[C ",
         " \033[C                                              \033[C " };
     constexpr std::string_view gestionDeSesiones[3]{
-        " \033[C  20 horas             ayudaaa                \033[C ",
+        " \033[C                                              \033[C ",
         " \033[C     Gestion de Clientes (Sin terminar)       \033[C ",
-        " \033[C  aaaaaa                             :c       \033[C " };
+        " \033[C                                              \033[C " };
     constexpr std::string_view gestionDeClientes[3]{
-        " \033[C       OJO : falta terminar                   \033[C ",
-        " \033[C             Simulacion de Sesiones (creo)    \033[C ",
-        " \033[C   :D                                         \033[C " };
+        " \033[C                                              \033[C ",
+        " \033[C            Simulacion de Sesiones            \033[C ",
+        " \033[C                                              \033[C " };
     constexpr std::string_view facturacion[3]{
         " \033[C                                              \033[C ",
-        " \033[C         Facturacion (todavia nada :v)        \033[C ",
+        " \033[C                 Facturacion                  \033[C ",
         " \033[C                                              \033[C " };
     constexpr std::string_view reservas[3]{
         " \033[C                                              \033[C ",
-        " \033[C          Reservas (WIP = aun falta)          \033[C ",
+        " \033[C                   Reservas                   \033[C ",
         " \033[C                                              \033[C " };
     constexpr std::string_view reportes[3]{
         " \033[C                                              \033[C ",
-        " \033[C          Reportes     ya sale, falta poco    \033[C ",
+        " \033[C                   Reportes                   \033[C ",
         " \033[C                                              \033[C " };
     // ******************************* Botones *******************************
     constexpr std::string_view hacerReserva[3]{
