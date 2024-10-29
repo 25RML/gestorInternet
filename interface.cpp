@@ -61,6 +61,20 @@ namespace selectionMaps
         {
             const extern Button eliminar{ instDisplaySet<3>(formattedText::eliminar),{125,25},secondaryColorSet };
             const extern Button volver{ instDisplaySet<3>(formattedText::volver),{123,30},primaryColorSet };
+        }   
+    }
+
+    namespace SimulacionClientes
+    {
+        const extern Button comenzarSesion{ instDisplaySet<3>(formattedText::comenzarSesion),{14,5},primaryColorSet };
+        const extern Button terminarSesion{ instDisplaySet<3>(formattedText::terminarSesion),{14,9},primaryColorSet };
+        const extern Button volverMenu{ instDisplaySet<3>(formattedText::volver),{15,13},secondaryColorSet };
+
+        namespace SubComenzarSesion
+        {
+            const extern Button horaLibre{ instDisplaySet<3>(formattedText::horaLibre),{14,30},ternaryColorSet };
+            const extern Button horaFija{ instDisplaySet<3>(formattedText::horaFija),{14,35},ternaryColorSet };
+            const extern Button volver{ instDisplaySet<3>(formattedText::volver),{22,43},quaternaryColorSet };
         }
     }
 
@@ -198,6 +212,49 @@ namespace selectionMaps
             map.traveler = map.head->next;
             return map;
         }
+        inline SelectionMap assignSimulacionClientes()
+        {
+            SelectionMap map{};
+            using Direction = SelectionMap::Member::Direction;
+            // Instanciacion de los miembros
+            map.append(map.createMember(SimulacionClientes::comenzarSesion));
+            map.append(map.createMember(SimulacionClientes::terminarSesion));
+            map.append(map.createMember(SimulacionClientes::volverMenu));
+            // Asignacion de Rutas
+            SelectionMap::Member* target{ map.head };
+            map.reset();
+            for (int i{ 0 }; i < 2; ++i)
+            {
+                map.traveler = map.traveler->next;
+                target->linkTo(Direction::down, map.traveler);
+                target = target->next;
+            }
+            map.reset();
+            return map;
+        }
+        inline SelectionMap assignSeleccionTipoHoraSimulacion()
+        {
+            SelectionMap map{};
+            using Direction = SelectionMap::Member::Direction;
+            // Instanciacion de los miembros
+            map.append(map.createMember(SimulacionClientes::SubComenzarSesion::horaLibre));
+            map.append(map.createMember(SimulacionClientes::SubComenzarSesion::horaFija));
+            map.append(map.createMember(SimulacionClientes::SubComenzarSesion::volver));
+            // Asignacion de Rutas
+            SelectionMap::Member* target{ map.head };
+            map.reset();
+            for (int i{ 0 }; i < 2; ++i)
+            {
+                map.traveler = map.traveler->next;
+                target->linkTo(Direction::down, map.traveler);
+                target = target->next;
+            }
+            target->isReactive = true;
+            map.head->linkTo(Direction::right, target, false);
+            map.head->right->linkTo(Direction::right, target, false);
+            map.reset();
+            return map;
+        }
     }
 
     inline SelectionMap g_mainMenuMap{ Definitions::assignMainMenu() };
@@ -207,6 +264,8 @@ namespace selectionMaps
     extern SelectionMap g_operacionesGestionComputadorasMap{ Definitions::assignOperacionesGestionComputadoras() };
     extern SelectionMap g_confirmAgregarComputadorasMap{ Definitions::assignConfirmAgregarComputadoras() };
     extern SelectionMap g_operacionesComputadorasMap{ Definitions::assignOperacionesComputadoras() };
+    extern SelectionMap g_simulacionClientesMap{ Definitions::assignSimulacionClientes() };
+    extern SelectionMap g_seleccionTipoHoraSimulacion{ Definitions::assignSeleccionTipoHoraSimulacion()};
 
 }
 /*================================================================================================================================================================
@@ -302,7 +361,18 @@ void mostrarInformacionComputadora(DoubleList<Computadora>::Node* target, COORD 
     COORD returnPos{ GetCursorPosition() };
 
     gotoCOORD(pos); printColor("ID : ", color::dBlue, color::dBlack); std::cout << target->data.ID; ++pos.Y;
-    gotoCOORD(pos); printColor("Estado : ", color::dBlue, color::dBlack); std::cout << target->data.estado; ++pos.Y;
+    gotoCOORD(pos); printColor("Estado : ", color::dBlue, color::dBlack);
+    switch (target->data.estado)
+    {
+    case 0:
+        std::cout << "Libre"; break;
+    case 1:
+        std::cout << "En Uso"; break;
+    case 2:
+        std::cout << "Reservada"; break;
+    case 3:
+        std::cout << "No Disponible"; break;
+    } ++pos.Y;
     gotoCOORD(pos); printColor("Mod. de Precio : ", color::dBlue, color::dBlack); std::cout << target->data.modificadorDePrecio; ++pos.Y;
     gotoCOORD(pos); printColor("Tiempo de Uso : ", color::dBlue, color::dBlack); std::cout << target->data.tiempoDeUsoTotalSegundos << 's'; ++pos.Y;
     gotoCOORD(pos); printColor("Componentes : ", color::dBlue, color::dBlack); pos.X += 2; ++pos.Y;
@@ -404,14 +474,28 @@ int selectComputer(DoubleList<Computadora> lista, const COORD& pos, int x, int y
         {
             ++timesAdded;
             {
+                selectionMaps::ColorSet buttonColor{};
+                switch (runner.head->data.estado)
+                {
+                case 0:
+                    buttonColor = selectionMaps::quaternaryColorSet; break;
+                case 1:
+                    buttonColor = selectionMaps::quinaryColorSet; break;
+                case 2:
+                    buttonColor = selectionMaps::senaryColorSet; break;
+                case 3:
+                    buttonColor = selectionMaps::septenaryColorSet; break;
+                }
+
+
                 if (!adder)
                 {
-                    pages.head->data.append(computerMap.createMember({ selectionMaps::instDisplaySet<4>(computerButton),assignerPos,selectionMaps::quaternaryColorSet }));
+                    pages.head->data.append(computerMap.createMember({ selectionMaps::instDisplaySet<4>(computerButton),assignerPos,buttonColor }));
                     adder = pages.head->data.head;
                 }
                 else
                 {
-                    adder->next = computerMap.createMember({ selectionMaps::instDisplaySet<4>(computerButton),assignerPos,selectionMaps::quaternaryColorSet });
+                    adder->next = computerMap.createMember({ selectionMaps::instDisplaySet<4>(computerButton),assignerPos,buttonColor });
                     adder = adder->next;
                 }
 
@@ -616,7 +700,7 @@ Hora getHora(const COORD& pos, const bool cleanup)
     
     hourMap.reset();
     // Obteniendo Input
-    short hourTime{ 12 };
+    short hourTime{ 0 };
     short minuteTime{ 0 };
     int inputSelection{ 0 };
     bool change{ true };

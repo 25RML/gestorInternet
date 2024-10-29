@@ -9,7 +9,7 @@ void generateComputersList(DoubleList<Computadora>& target, const int& amount)
 {
     for (int i{ 0 }; i < amount; ++i)
     {
-        target.append(target.createEntry(Computadora{ i + 1,1.0f,{"Comp A","Comp B","Comp C","Comp D"},"Disponible",0,{} }));
+        target.append(target.createEntry(Computadora{ i + 1,1.0f,{"Comp A","Comp B","Comp C","Comp D"},0,0,{} }));
     }
 }
 

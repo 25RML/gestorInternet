@@ -6,8 +6,6 @@
 #include "interface.h" // para el gotoCOORD()
 #include "gestionComputadoras.h"
 
-// ************************************************** GLOBAL VARIABLES **************************************************
-DoubleList<Computadora> g_registroComputadoras{};
 // *************************************** Funciones ***************************************
 
 void mainGestionComputadoras()
@@ -62,7 +60,7 @@ void mainGestionComputadoras()
 						globalComputerID,
 						std::stof(s_modPrecio),
 						{s_componentes[0],s_componentes[1],s_componentes[2],s_componentes[3]},
-						"Libre",
+						0,
 						0,
 						{}
 						}));
@@ -109,12 +107,6 @@ void mainGestionComputadoras()
 			continueSelection = false;
 			break;
 		}
-
-
-
-
-
-
 	}
 
 	gotoCOORD({ 0,0 });
