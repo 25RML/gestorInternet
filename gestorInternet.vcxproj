@@ -136,15 +136,18 @@
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="reportes.cpp" />
     <ClCompile Include="reservas.cpp" />
+    <ClCompile Include="tempFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="facturacion.h" />
     <ClInclude Include="gestionClientes.h" />
     <ClInclude Include="gestionComputadoras.h" />
     <ClInclude Include="gestionSesiones.h" />
+    <ClInclude Include="global.h" />
     <ClInclude Include="interface.h" />
     <ClInclude Include="reportes.h" />
     <ClInclude Include="reservas.h" />
+    <ClInclude Include="tempFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
