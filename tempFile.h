@@ -266,16 +266,30 @@ struct Reserva
 
 struct Computadora
 {
-    int ID;
-    float modificadorDePrecio{};
-    std::string componentes[4]{};
-    std::string estado{};
-    int tiempoDeUsoTotalSegundos{};
-    SingleList<Reserva> colaReservas{};
+    int ID;                                 // ID de la computadora
+    float modificadorDePrecio{};            // Valor decimal que modifica la tarifa general del servicio (default = 1.0)
+    std::string componentes[4]{};           // Agregado... no tiene ningun uso importante dentro del programa, quiza deberia ir en memoria externa y no en interna
+    int estado{0};                   // Estado del computadora, quiza se cambie a int, 0: Libre, 1: Ocupada, 2: Reservada, 3: No Disponible (mantenimiento y otros)
+    int tiempoDeUsoTotalSegundos{};         // Tiempo de uso total de la maquina (en segundos)
+    SingleList<Reserva> colaReservas{};     // Lista simplemente enlazada (cola) de las reservas para esta maquina
 
 };
-
-
+struct Cliente
+{
+    std::string nombre{};   // Nombre
+    int ID{};               // Solo si esta registrado en el "sistema", de otra forma = 0 (false)
+    int totalHoras{};       // Solo si ID es (true), registra el numero total de horas del cliente en el servicio
+    int gastoTotal{};       // Solo si ID es (true), registra el gasto total del cliente en el servicio
+};
+struct Sesion
+{
+    int idComputadora{};    // ID de la computadora siendo usada
+    int idCliente{};        // ID del cliente usando la computadora (0 para cliente no registrado)
+    Hora horaInicio{};      // Hora de inicio del servicio
+    Hora horaSalida{};
+    Fecha fecha{};
+    double costo{};
+};
 /*================================================================================================================================================================
                         FUNCTIONS
 ================================================================================================================================================================*/
