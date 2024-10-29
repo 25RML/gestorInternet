@@ -98,26 +98,26 @@ namespace formattedText
         " \033[C             Gestion de Computadoras          \033[C ",
         " \033[C                                              \033[C " };
     constexpr std::string_view gestionDeSesiones[3]{
-        " \033[C                                              \033[C ",
-        " \033[C               Gestion de Sesiones            \033[C ",
-        " \033[C                                              \033[C " };
+        " \033[C  20 horas             ayudaaa                \033[C ",
+        " \033[C     Gestion de Clientes (Sin terminar)       \033[C ",
+        " \033[C  aaaaaa                             :c       \033[C " };
     constexpr std::string_view gestionDeClientes[3]{
-        " \033[C                                              \033[C ",
-        " \033[C               Gestion de Clientes            \033[C ",
-        " \033[C                                              \033[C " };
+        " \033[C       OJO : falta terminar                   \033[C ",
+        " \033[C             Simulacion de Sesiones (creo)    \033[C ",
+        " \033[C   :D                                         \033[C " };
     constexpr std::string_view facturacion[3]{
         " \033[C                                              \033[C ",
-        " \033[C                   Facturacion                \033[C ",
+        " \033[C         Facturacion (todavia nada :v)        \033[C ",
         " \033[C                                              \033[C " };
     constexpr std::string_view reservas[3]{
         " \033[C                                              \033[C ",
-        " \033[C                    Reservas                  \033[C ",
+        " \033[C          Reservas (WIP = aun falta)          \033[C ",
         " \033[C                                              \033[C " };
     constexpr std::string_view reportes[3]{
         " \033[C                                              \033[C ",
-        " \033[C                    Reportes                  \033[C ",
+        " \033[C          Reportes     ya sale, falta poco    \033[C ",
         " \033[C                                              \033[C " };
-    // ******************************* Reportes *******************************
+    // ******************************* Botones *******************************
     constexpr std::string_view hacerReserva[3]{
         " \033[C                 \033[C ",
         " \033[C  Hacer Reserva  \033[C ",
@@ -133,6 +133,22 @@ namespace formattedText
     constexpr std::string_view mostrarComputadora[3]{
         " \033[C                 \033[C ",
         " \033[C     Mostrar     \033[C ",
+        " \033[C                 \033[C " };
+    constexpr std::string_view comenzarSesion[3]{
+        " \033[C                 \033[C ",
+        " \033[C Comenzar Sesion \033[C ",
+        " \033[C                 \033[C " };
+    constexpr std::string_view terminarSesion[3]{
+        " \033[C                 \033[C ",
+        " \033[C Terminar Sesion \033[C ",
+        " \033[C                 \033[C " };
+    constexpr std::string_view horaLibre[3]{
+        " \033[C                 \033[C ",
+        " \033[C    Hora Libre   \033[C ",
+        " \033[C                 \033[C " };
+    constexpr std::string_view horaFija[3]{
+        " \033[C                 \033[C ",
+        " \033[C    Hora Fija    \033[C ",
         " \033[C                 \033[C " };
     // ******************************* Uso General *******************************
     constexpr std::string_view salir[3]{
@@ -194,6 +210,22 @@ namespace formattedText
             " \033[C                                     \033[C ",
             " \033[C         AGREGAR COMPUTADORA         \033[C ",
             " \033[C                                     \033[C ", };
+        constexpr std::string_view elegirTipoSesion[3]{
+            " \033[C                             \033[C ",
+            " \033[C    ELEGIR TIPO DE SESION    \033[C ",
+            " \033[C                             \033[C ", };
+        constexpr std::string_view introducirHora[3]{
+            " \033[C                             \033[C ",
+            " \033[C     INTRODUZCA UNA HORA     \033[C ",
+            " \033[C                             \033[C ", };
+        constexpr std::string_view sesionAsignada[3]{
+            " \033[C                             \033[C ",
+            " \033[C       SESION ASIGNADA       \033[C ",
+            " \033[C                             \033[C ", };
+        constexpr std::string_view terminarSesion[3]{
+            " \033[C                             \033[C ",
+            " \033[C       TERMINAR SESION       \033[C ",
+            " \033[C                             \033[C ", };
         constexpr std::string_view computer[11]{
             "    INFORMACION",
             ".o===============o.",
@@ -281,6 +313,9 @@ namespace selectionMaps
     constexpr ColorSet secondaryColorSet{ UI_Colors::selectedSButtonText,UI_Colors::unselectedSButtonText,UI_Colors::selectedSButton,UI_Colors::unselectedSButton };
     constexpr ColorSet ternaryColorSet{ UI_Colors::selectedTButtonText,UI_Colors::unselectedTButtonText,UI_Colors::selectedTButton,UI_Colors::unselectedTButton };
     constexpr ColorSet quaternaryColorSet{ color::bGreen,color::dWhite,color::dBlack,color::dBlack };
+    constexpr ColorSet quinaryColorSet{ color::bGreen,color::dYellow,color::dBlack,color::dBlack };
+    constexpr ColorSet senaryColorSet{ color::bGreen,color::dPurple,color::dBlack,color::dBlack };
+    constexpr ColorSet septenaryColorSet{ color::bGreen,color::dRed,color::dBlack,color::dBlack };
     // ***************************************************************** STRUCT *****************************************************************
     struct Button
     {
@@ -374,7 +409,19 @@ namespace selectionMaps
             const extern Button volver;
         }
     }
+    namespace SimulacionClientes
+    {
+        const extern Button comenzarSesion;
+        const extern Button terminarSesion;
+        const extern Button volverMenu;
 
+        namespace SubComenzarSesion
+        {
+            const extern Button horaLibre;
+            const extern Button horaFija;
+            const extern Button volver;
+        }
+    }
     // ***************************************************************** STRUCT *****************************************************************
     struct SelectionMap
     {
@@ -572,12 +619,17 @@ namespace selectionMaps
     namespace Definitions
     {
         inline SelectionMap assignMainMenu();
+
         inline SelectionMap assignReservas();
         inline SelectionMap assignReservasConfirmation();
         inline SelectionMap assignReservasContinue();
+
         inline SelectionMap assignOperacionesGestionComputadoras();
         inline SelectionMap assignConfirmAgregarComputadoras();
         inline SelectionMap assignOperacionesComputadoras();
+
+        inline SelectionMap assignSimulacionClientes();
+        inline SelectionMap assignSeleccionTipoHoraSimulacion();
     }
     // ***************************************************************** DEFINICIONES *****************************************************************
     extern SelectionMap g_mainMenuMap;
@@ -587,6 +639,8 @@ namespace selectionMaps
     extern SelectionMap g_operacionesGestionComputadorasMap;
     extern SelectionMap g_confirmAgregarComputadorasMap;
     extern SelectionMap g_operacionesComputadorasMap;
+    extern SelectionMap g_simulacionClientesMap;
+    extern SelectionMap g_seleccionTipoHoraSimulacion;
 
 
 }

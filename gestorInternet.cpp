@@ -10,7 +10,12 @@
 #include "facturacion.h"
 #include "reservas.h"
 #include "reportes.h"
+#include "global.h"
 
+// ************************************************** GLOBAL VARIABLES **************************************************
+DoubleList<Computadora> g_registroComputadoras{};
+SingleList<Sesion> g_registroSesiones;
+double g_mainTarifa{ 1.0 };   // TARIFA GLOBAL, IMPORTANTISIMO
 // ********************************************* FUNCTIONS ********************************************* 
 int main()
 {
@@ -19,7 +24,6 @@ int main()
     lockConsole();
     
     // Start Menu
-    int defaultS[2] = { 1,1 };
 
     printColor(menuDefs::background, color::dBlack, color::bBlack);  // Background
     printMainMenu();
@@ -49,7 +53,6 @@ int main()
 
             clearMainWindow();      // Funcion para limpiar la pantalla
             mainGestionClientes();  // FUNCION PRINCIPAL
-            _getch();               // Pausar la Consola
             printMainMenu();        // Reimprimir toda la ventana principal
 
             break;

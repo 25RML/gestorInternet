@@ -4,88 +4,227 @@
 #include "gestionComputadoras.h"
 #include "interface.h" // para el gotoCOORD()
 #include "gestionClientes.h"
+#include "global.h"
+// *************************************** Variables ***************************************
+
+extern std::map<std::string, int> horasConteo;
+extern std::map<std::string, double> gastosTotales;
+
 // *************************************** Funciones ***************************************
 
 void mainGestionClientes()
 {
-	gotoCOORD(Windows::mainWindowStartPOS); // Version alterna del gotoxy
-	std::cout << "Hello World!";
-}
+    gotoCOORD({ 0,0 });
+    // Imprimir Menus
+    printColor(menuDefs::background, color::dBlack, color::bBlack);     // Reset Background
+    printWindow(25, 14, { 12,3 }, color::dBlack, color::dRed);          // Imprimir ventana de Operaciones
+    printWindow(37, 25, { 6,20 }, color::dBlack, color::dYellow);       // Imprimir ventana de Sub Operaciones
+    printWindow(102, 36, { 50,7 }, color::dBlack, color::bGreen);       // Imprimir ventana de Vista
 
-using namespace std;
+    printWindow(64, 2, { 68,6 }, color::bGreen, color::dGreen);         // Ventana de Titulo
+    gotoCOORD({ 91,7 }); printColor("\033[4mSIMULADOR DE CLIENTES\033[0m", color::dBlack, color::bGreen);   // Titulo
 
-struct Computadora {
-    bool ocupada;
-    int tarifa;
-    string cliente;
-    time_t inicio;
-    double total;
-};
+    gotoCOORD({ 0,0 }); // Estetico solamente, volver a 0,0
+    int inputSelection{ 0 };
+    bool continueSelection{ true };
+    while (continueSelection)
+    {
+        printRectangle({ 7,21 }, 35, 25, color::dBlack);                                    // Imprime un rectangulo de color negro (resetea la ventana de sub-operaciones/vista)
+        selectionMaps::g_simulacionClientesMap.printAll();                                  // Imprime los Botones
+        inputSelection = selectionMaps::g_simulacionClientesMap.startSelection(true);       // Elegir operacion del menu de operaciones
+        
+        switch (inputSelection)
+        {
+        case 1:             // ******************************************* Comenzar Sesion *******************************************
+        {
+            printFormat(formattedText::Elements::elegirTipoSesion, { 8,21 }, color::dBlack, color::dYellow);
 
-vector<Computadora> computadoras(20);
-const vector<string> nombresClientes = {
-    "Valentina Lopez", "Diego Martinez", "Lucia Castillo", "Sebastian Vargas", "Camila Fernandez",
-    "Andres Morales", "Sofia Gomez", "Mateo Ramirez", "Emma Navarro", "Juan Perez",
-    "Isabella Rodriguez", "Luis Torres", "Antonella Silva", "Nicolas Mendoza", "Martina Rojas",
-    "Alejandro Diaz", "Renata Paredes", "Daniel Herrera", "Victoria Guzman", "Felipe Sanchez"
-};
+            selectionMaps::g_seleccionTipoHoraSimulacion.printAll();
+            switch (selectionMaps::g_seleccionTipoHoraSimulacion.startSelection(true))
+            {
+            case 1:         // Asignar computadora al azar (Hora Libre)
+            {
+                size_t sizeRegistro{ g_registroComputadoras.getSize() };                    // Numero de Computadoras en registro
+                DoubleList<Computadora>::Node* computadora{ g_registroComputadoras.head };  // Crea un puntero de "recorrido" usando la cabeza del registro global de computadoras
 
-map<string, int> horasConteo;
-map<string, double> gastosTotales;
+                int pc{};
+                srand(time(nullptr));
+                do {
+                    pc = rand() % sizeRegistro;
+                    computadora = g_registroComputadoras.getAt(pc);
+                } while (computadora->data.estado != 0); // Buscar por computadora Libre   NOTA: VA A ITERAR INFINITAMENTE SI NO EXISTE COMPUTADORA LIBRE (ARREGLAR ESO PORFA)
 
-void cargarEstado();
-void guardarEstado();
-void cargarHoras();
-void guardarHoras();
-void cargarGastos();
-void guardarGastos();
-void mostrarEstado();
-void simularClienteAleatorioLibre();
-void finalizarHoraLibre();
-void simularClienteAleatorioFija();
-void observarRegistros();
-void horasGratis();
+                computadora->data.estado = 1;                       // Cambia el estado a "Ocupado"
+                std::string cliente{ nombresClientes[rand() % 20] };// Se usa 20 porque solo existen 20 nombres, no hay otra forma :p
 
-int main() {
-    for (int i = 0; i < 20; i++) {
-        computadoras[i].ocupada = false;
-        computadoras[i].total = 0.0;
-        computadoras[i].tarifa = (i < 10) ? 1 : (i < 15) ? 2 : 3;
-    }
-    cargarEstado();
-    cargarHoras();
-    cargarGastos();
+                std::time_t currentDate{}; std::time(&currentDate); //
+                std::tm dateInfo{};                                 //  Usado para obtener la Hora (y Fecha)
+                localtime_s(&dateInfo, &currentDate);               //
 
-    int opcion;
-    while (true) {
-        mostrarEstado();
-        cout << "\nSelecciona una opcion:\n";
-        cout << "1. Simular cliente aleatorio hora libre\n";
-        cout << "2. Finalizar hora libre de cliente\n";
-        cout << "3. Simular cliente aleatorio hora fija\n";
-        cout << "4. Horas gratis\n";
-        cout << "5. Observar registros\n";
-        cout << "6. Salir\n";
-        cin >> opcion;
+                g_registroSesiones.push(g_registroSesiones.createEntry(     // Creamos la sesion y la almacenamos en el registro global de sesiones (o algo asi)
+                    {
+                        computadora->data.ID,       // ID Computadora
+                        0,                          // ID Cliente, 0 porque no se usa el struct de cliente (?) pd:necesita fix
+                        {static_cast<short>(dateInfo.tm_hour),static_cast<short>(dateInfo.tm_min)}, // Hora de Inicio (static cast porque use short en lugar de int :c)
+                        {23,59},                    // Hora de Salida, como es hora libre, la seteamos al maximo (solo acaba cuando el gerente dice que acaba, a menos que acabe el dia primero)
+                        {static_cast<short>(dateInfo.tm_year+1900),static_cast<short>(dateInfo.tm_mon),static_cast<short>(dateInfo.tm_mday)},   // Fecha (largaso por mi error del short :c)
+                        0.0                         // Costo (en 0 porque todavia no finalizo la sesion :p)
+                    }
+                ));     // Para mas detalles ver la definicion del struct en "tempFile.h" de "Sesion" y la definicion de las listas en el mismo archivo
 
-        switch (opcion) {
-        case 1: simularClienteAleatorioLibre(); break;
-        case 2: finalizarHoraLibre(); break;
-        case 3: simularClienteAleatorioFija(); break;
-        case 4: horasGratis(); break;
-        case 5: observarRegistros(); break;
-        case 6: guardarEstado(); guardarHoras(); guardarGastos(); return 0;
-        default: cout << "Opcion invalida. Intenta de nuevo.\n";
+                // *********************************** PARTE INTERFAZ ***********************************
+                printRectangle({ 7,21 }, 35, 25, color::dBlack);                                                // Reset background
+                printFormat(formattedText::Elements::sesionAsignada, { 8,21 }, color::dBlack, color::dYellow);  // Print flavor element
+
+                gotoCOORD({ 12,32 }); printColor("Se ha iniciado una sesion.", color::bYellow, color::dBlack);
+                gotoCOORD({ 12,33 }); printColor("- Computadora (ID): ", color::bYellow, color::dBlack); std::cout << computadora->data.ID;
+                gotoCOORD({ 12,34 }); printColor("- Cliente: ", color::bYellow, color::dBlack); std::cout << cliente;
+                
+                //
+                //      Si pueden hacer que se imprima la hora como en el programa que enviaron seria excelente, pero si no, no hay problema
+                //                   
+
+                _getch();
+                // END
+            }
+            break;
+            case 2:         // Asignar computadora por hora
+            {
+                printRectangle({ 7,21 }, 35, 25, color::dBlack);                                                // Reset background
+                printFormat(formattedText::Elements::introducirHora, { 8,23 }, color::dBlack, color::dYellow);
+
+                size_t sizeRegistro{ g_registroComputadoras.getSize() };                    // Numero de Computadoras en Registro
+                Hora definirHora{ getHora({17,28},true) };                                  // Obtener la Hora usando una funcion bonita c:
+                DoubleList<Computadora>::Node* computadora{ g_registroComputadoras.head };  // Crea un puntero de "recorrido" usando la cabeza del registro global de computadoras
+
+                int pc;
+                srand(time(nullptr));
+                do {
+                    pc = rand() % sizeRegistro;
+                    computadora = g_registroComputadoras.getAt(pc);
+                } while (computadora->data.estado != 0); // Buscar por computadora Libre   NOTA: VA A ITERAR INFINITAMENTE SI NO EXISTE COMPUTADORA LIBRE (ARREGLAR ESO PORFA)
+                
+                computadora->data.estado = 1;                       // Cambia el estado a "Ocupado"
+                std::string cliente{ nombresClientes[rand() % 20] };// Se usa 20 porque solo existen 20 nombres, no hay otra forma :p
+
+                std::time_t currentDate{}; std::time(&currentDate); //
+                std::tm dateInfo{};                                 //  Usado para obtener la Hora (y Fecha)
+                localtime_s(&dateInfo, &currentDate);               //
+                
+                Hora horaInicio{ static_cast<short>(dateInfo.tm_hour),static_cast<short>(dateInfo.tm_min) };
+                Hora horaFinal{horaInicio};
+                horaFinal.minute += definirHora.minute;
+                if (horaFinal.minute >= 60)
+                {
+                    horaFinal.minute -= 60;
+                    ++horaFinal.hour;
+                } horaFinal.hour += definirHora.hour;               // Obtener Hora Final
+                
+                
+                g_registroSesiones.push(g_registroSesiones.createEntry(     // Creamos la sesion y la almacenamos en el registro global de sesiones (o algo asi)
+                    {
+                        computadora->data.ID,       // ID Computadora
+                        0,                          // ID Cliente, 0 porque no se usa el struct de cliente (?) pd:necesita fix
+                        horaInicio, // Hora de Inicio (static cast porque use short en lugar de int :c)
+                        horaFinal,                    // Hora de Salida, como es hora libre, la seteamos al maximo (solo acaba cuando el gerente dice que acaba, a menos que acabe el dia primero)
+                        {static_cast<short>(dateInfo.tm_year + 1900),static_cast<short>(dateInfo.tm_mon),static_cast<short>(dateInfo.tm_mday)},   // Fecha (largaso por mi error del short :c)
+                        0.0                         // Tarifaaaaaaaaaaaaaaaa, osea, esta por hacer :p, este si debe de tener tarifa definida asi que les encargo.
+                                                    // La ecuacion debe ser algo tipo "g_mainTarifa * modPrecio * horas", pero no toma en cuenta los minutos, si pueden hacerlo piola
+                    }
+                ));     // Para mas detalles ver la definicion del struct en "tempFile.h" de "Sesion" y la definicion de las listas en el mismo archivo
+
+                // *********************************** PARTE INTERFAZ ***********************************
+                printRectangle({ 7,21 }, 35, 25, color::dBlack);                                                // Reset background
+                printFormat(formattedText::Elements::sesionAsignada, { 8,21 }, color::dBlack, color::dYellow);  // Print flavor element
+
+                gotoCOORD({ 12,32 }); printColor("Se ha iniciado una sesion.", color::bYellow, color::dBlack);
+                gotoCOORD({ 12,33 }); printColor("- Computadora (ID): ", color::bYellow, color::dBlack); std::cout << computadora->data.ID;
+                gotoCOORD({ 12,34 }); printColor("- Cliente: ", color::bYellow, color::dBlack); std::cout << cliente;
+
+                //
+                //      Si pueden hacer que se imprima la hora como en el programa que enviaron seria excelente, pero si no, no hay problema
+                //                   
+
+                _getch();
+                // END
+
+            }
+            break;
+            case 3:
+                break;
+            }
+        }
+        break;
+        case 2:     // ******************************************************* Eliminar Sesion *******************************************************
+        {
+            printRectangle({ 7,21 }, 35, 25, color::dBlack);
+            printFormat(formattedText::Elements::terminarSesion, { 8,21 }, color::dBlack, color::dYellow);
+            gotoCOORD({ 12,32 }); printColor("Elija una computadora con", color::bYellow, color::dBlack);
+            gotoCOORD({ 16,33 }); printColor("una sesion activa", color::bYellow, color::dBlack);
+
+            do
+            {
+                int idSelector{ selectComputer(g_registroComputadoras,{55,13},8,4) };
+                if (!idSelector) break;
+                // Computer Info & Operations
+                DoubleList<Computadora>::Node* target{ g_registroComputadoras.getAt(idSelector - 1) };
+
+                if (target->data.estado != 1)   // Si no esta en uso
+                {
+                    printRectangle({ 7,28 }, 35, 18, color::dBlack);
+                    gotoCOORD({ 12,32 }); printColor("La computadora elegida", color::bYellow, color::dBlack);
+                    gotoCOORD({ 12,33 }); printColor("no se encuentra en uso", color::bYellow, color::dBlack);
+                }
+                else
+                {
+
+                    //time_t fin = time(0);
+                    //double tiempoUsado = difftime(fin, computadoras[pc].inicio) / 60;
+                    //double monto = tiempoUsado * computadoras[pc].tarifa;
+
+                    //computadoras[pc].ocupada = false;
+                    //horasConteo[computadoras[pc].cliente] += tiempoUsado / 60;
+                    //gastosTotales[computadoras[pc].cliente] += monto;
+
+                    //guardarGastos();
+                    //guardarHoras();
+
+                    //cout << "El cliente " << computadoras[pc].cliente << " ha finalizado su tiempo en la PC " << (pc + 1) << endl;
+                    //cout << "Tiempo usado: " << tiempoUsado << " minutos\n";
+                    //cout << "Monto a cobrar: S/." << monto << endl;
+
+                    target->data.estado = 0; // La computadora ya esta libre
+
+                    // Por hacer:
+                    //  - Calcular tarifa y almacenarla en la sesion con la id de la computadora
+                    //  - Reagregar el guardado por archivos
+                    //  - Guardar hora final en el registro de sesiones
+                    //  - Implementar Clientes (no se como hacerlo xd)
+                    //
+
+                    printRectangle({ 7,21 }, 35, 25, color::dBlack);
+                    gotoCOORD({ 12,32 }); printColor("Se termino la sesion de", color::bYellow, color::dBlack);
+                    gotoCOORD({ 12,33 }); printColor("la computadora elegida", color::bYellow, color::dBlack);
+                }
+
+            } while (1);
+        }
+        break;
+        case 3:
+            continueSelection = false;
+            break;
         }
     }
+
+    gotoCOORD({ 0,0 });
+    printColor(menuDefs::background, color::dBlack, color::bBlack);
 }
 
-void mostrarEstado() {
-    for (int i = 0; i < 20; i++) {
-        cout << "PC " << (i + 1) << " [" << (computadoras[i].ocupada ? 'x' : 'o') << "] ";
-        if ((i + 1) % 5 == 0) cout << endl;
-    }
-}
+
+// ************************************************************************** REFERENCIA **************************************************************************
+
+/*
+using namespace std;
 
 void cargarEstado() {
     ifstream file("clientes.txt");
@@ -143,53 +282,6 @@ void guardarGastos() {
     file.close();
 }
 
-void simularClienteAleatorioLibre() {
-    int pc;
-    srand(time(0));
-    do {
-        pc = rand() % 20;
-    } while (computadoras[pc].ocupada);
-
-    computadoras[pc].ocupada = true;
-    computadoras[pc].cliente = nombresClientes[rand() % nombresClientes.size()];
-    computadoras[pc].inicio = time(0);
-
-    cout << "\n" << computadoras[pc].cliente << " ha iniciado sesion en la PC " << (pc + 1) << endl;
-    cout << "Hora de inicio: " << ctime(&computadoras[pc].inicio) << endl;
-}
-
-void finalizarHoraLibre() {
-    int pc = -1;
-    for (int i = 0; i < 20; i++) {
-        if (computadoras[i].ocupada) {
-            cout << "PC " << (i + 1) << " - " << computadoras[i].cliente << endl;
-        }
-    }
-    cout << "Selecciona una PC para finalizar (1-20): ";
-    cin >> pc;
-    pc--;
-
-    if (pc < 0 || pc >= 20 || !computadoras[pc].ocupada) {
-        cout << "Seleccion invalida.\n";
-        return;
-    }
-
-    time_t fin = time(0);
-    double tiempoUsado = difftime(fin, computadoras[pc].inicio) / 60;
-    double monto = tiempoUsado * computadoras[pc].tarifa;
-
-    computadoras[pc].ocupada = false;
-    horasConteo[computadoras[pc].cliente] += tiempoUsado / 60;
-    gastosTotales[computadoras[pc].cliente] += monto;
-
-    guardarGastos();
-    guardarHoras();
-
-    cout << "El cliente " << computadoras[pc].cliente << " ha finalizado su tiempo en la PC " << (pc + 1) << endl;
-    cout << "Tiempo usado: " << tiempoUsado << " minutos\n";
-    cout << "Monto a cobrar: S/." << monto << endl;
-}
-
 void horasGratis() {
     vector<string> clientesConHorasGratis;
     for (const auto& pair : horasConteo) {
@@ -213,23 +305,6 @@ void horasGratis() {
     file.close();
 }
 
-void simularClienteAleatorioFija() {
-    int pc, horas, tarifa;
-    srand(time(0));
-    do {
-        pc = rand() % 20;
-    } while (computadoras[pc].ocupada);
-
-    cout << "Horas a alquilar (1, 2, 3, etc.): ";
-    cin >> horas;
-    tarifa = computadoras[pc].tarifa * horas;
-
-    computadoras[pc].ocupada = true;
-    computadoras[pc].cliente = nombresClientes[rand() % nombresClientes.size()];
-    computadoras[pc].total += tarifa;
-    cout << "El cliente " << computadoras[pc].cliente << " alquilo la PC " << (pc + 1) << " por " << horas << " horas.\n";
-}
-
 void observarRegistros() {
     cout << left << setw(25) << "Nombre del Cliente"
         << setw(20) << "Horas Alquiladas"
@@ -246,4 +321,4 @@ void observarRegistros() {
             << setw(20) << totalGastado << endl;
     }
 }
-
+*/
