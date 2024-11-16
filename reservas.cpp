@@ -11,10 +11,6 @@
 
 void mainReservas()
 {
-	//  Por motivos de testeo
-	//DoubleList<Computadora> computadorasMain{};
-	//generateComputersList(computadorasMain, 90);
-
 	// Imprimir Pseudo-Interfaz
 	printColor(menuDefs::background, color::dBlack, color::bBlack);  // Reset Background
 	printWindow(25, 16, {7,4},color::dBlack,color::dYellow); // Print Window

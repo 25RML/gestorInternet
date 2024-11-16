@@ -269,7 +269,7 @@ struct Computadora
     int ID;                                 // ID de la computadora
     float modificadorDePrecio{};            // Valor decimal que modifica la tarifa general del servicio (default = 1.0)
     std::string componentes[4]{};           // Agregado... no tiene ningun uso importante dentro del programa, quiza deberia ir en memoria externa y no en interna
-    int estado{0};                   // Estado del computadora, quiza se cambie a int, 0: Libre, 1: Ocupada, 2: Reservada, 3: No Disponible (mantenimiento y otros)
+    int estado{0};                          // Estado del computadora, quiza se cambie a int, 0: Libre, 1: Ocupada, 2: Reservada, 3: No Disponible (mantenimiento y otros)
     int tiempoDeUsoTotalSegundos{};         // Tiempo de uso total de la maquina (en segundos)
     SingleList<Reserva> colaReservas{};     // Lista simplemente enlazada (cola) de las reservas para esta maquina
 
