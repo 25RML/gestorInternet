@@ -150,6 +150,20 @@ namespace formattedText
         " \033[C                 \033[C ",
         " \033[C    Hora Fija    \033[C ",
         " \033[C                 \033[C " };
+    constexpr std::string_view reporteUso[4]{
+        " \033[C                 \033[C ",
+        " \033[C     Generar     \033[C ",
+        " \033[C  Reporte de Uso \033[C ",
+        " \033[C                 \033[C " };
+    constexpr std::string_view reporteIngreso[4]{
+        " \033[C                 \033[C ",
+        " \033[C Generar Reporte \033[C ",
+        " \033[C   de Ingresos   \033[C ",
+        " \033[C                 \033[C " };
+    constexpr std::string_view generarTxt[4]{
+        " \033[C                 \033[C ",
+        " \033[C   Generar .txt  \033[C ",
+        " \033[C                 \033[C " };
     // ******************************* Uso General *******************************
     constexpr std::string_view salir[3]{
         "                   ",
@@ -422,6 +436,18 @@ namespace selectionMaps
             const extern Button volver;
         }
     }
+    namespace Reportes
+    {
+        const extern Button generarReporteUso;
+        const extern Button generarReporteIngresos;
+        const extern Button volverMenu;
+
+        namespace SubConfirmation
+        {
+            const extern Button generarTxt;
+            const extern Button volver;
+        }
+    }
     // ***************************************************************** STRUCT *****************************************************************
     struct SelectionMap
     {
@@ -630,6 +656,9 @@ namespace selectionMaps
 
         inline SelectionMap assignSimulacionClientes();
         inline SelectionMap assignSeleccionTipoHoraSimulacion();
+
+        inline SelectionMap assignReportes();
+        inline SelectionMap assignReportesConfirmation();
     }
     // ***************************************************************** DEFINICIONES *****************************************************************
     extern SelectionMap g_mainMenuMap;
@@ -641,6 +670,8 @@ namespace selectionMaps
     extern SelectionMap g_operacionesComputadorasMap;
     extern SelectionMap g_simulacionClientesMap;
     extern SelectionMap g_seleccionTipoHoraSimulacion;
+    extern SelectionMap g_reportesMap;
+    extern SelectionMap g_reportesConfirmationMap;
 
 
 }

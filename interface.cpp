@@ -29,7 +29,6 @@ namespace selectionMaps
         const Button reportes{ instDisplaySet<3>(formattedText::reportes),{54,40}, primaryColorSet };
         const Button salir{ instDisplaySet<3>(formattedText::salir),{115,38}, secondaryColorSet };
     }
-
     namespace Reservas
     {
         const Button hacerReservas{ instDisplaySet<3>(formattedText::hacerReserva),{9,6}, ternaryColorSet };
@@ -63,7 +62,6 @@ namespace selectionMaps
             const extern Button volver{ instDisplaySet<3>(formattedText::volver),{123,30},primaryColorSet };
         }   
     }
-
     namespace SimulacionClientes
     {
         const extern Button comenzarSesion{ instDisplaySet<3>(formattedText::comenzarSesion),{14,5},primaryColorSet };
@@ -77,7 +75,18 @@ namespace selectionMaps
             const extern Button volver{ instDisplaySet<3>(formattedText::volver),{22,43},quaternaryColorSet };
         }
     }
+    namespace Reportes
+    {
+        const extern Button generarReporteUso{ instDisplaySet<4>(formattedText::reporteUso),{10,15},primaryColorSet };
+        const extern Button generarReporteIngresos{ instDisplaySet<4>(formattedText::reporteIngreso),{10,21},primaryColorSet };
+        const extern Button volverMenu{ instDisplaySet<3>(formattedText::volver),{11,27},secondaryColorSet };
 
+        namespace SubConfirmation
+        {
+            const extern Button generarTxt{ instDisplaySet<3>(formattedText::generarTxt), {70,36}, ternaryColorSet };
+            const extern Button volver{ instDisplaySet<3>(formattedText::volver), {108,36}, secondaryColorSet };
+        }
+    }
 
     namespace Definitions
     {
@@ -255,6 +264,39 @@ namespace selectionMaps
             map.reset();
             return map;
         }
+        inline SelectionMap assignReportes()
+        {
+            SelectionMap map{};
+            using Direction = SelectionMap::Member::Direction;
+            // Instanciacion de los miembros
+            map.append(map.createMember(Reportes::generarReporteUso));
+            map.append(map.createMember(Reportes::generarReporteIngresos));
+            map.append(map.createMember(Reportes::volverMenu));
+            // Asignacion de Rutas
+            SelectionMap::Member* target{ map.head };
+            map.reset();
+            for (int i{ 0 }; i < 2; ++i)
+            {
+                map.traveler = map.traveler->next;
+                target->linkTo(Direction::down, map.traveler);
+                target = target->next;
+            }
+            map.reset();
+            return map;
+        }
+        inline SelectionMap assignReportesConfirmation()
+        {
+            SelectionMap map{};
+            using Direction = SelectionMap::Member::Direction;
+            // Instanciacion de los miembros
+            map.append(map.createMember(Reportes::SubConfirmation::generarTxt));
+            map.append(map.createMember(Reportes::SubConfirmation::volver));
+
+            map.head->linkTo(Direction::right, map.head->next);
+
+            map.reset();
+            return map;
+        }
     }
 
     inline SelectionMap g_mainMenuMap{ Definitions::assignMainMenu() };
@@ -266,6 +308,8 @@ namespace selectionMaps
     extern SelectionMap g_operacionesComputadorasMap{ Definitions::assignOperacionesComputadoras() };
     extern SelectionMap g_simulacionClientesMap{ Definitions::assignSimulacionClientes() };
     extern SelectionMap g_seleccionTipoHoraSimulacion{ Definitions::assignSeleccionTipoHoraSimulacion()};
+    extern SelectionMap g_reportesMap{ Definitions::assignReportes() };
+    extern SelectionMap g_reportesConfirmationMap{ Definitions::assignReportesConfirmation() };
 
 }
 /*================================================================================================================================================================
@@ -286,7 +330,7 @@ void gotoCOORD(COORD position)
 
 void printColor(const std::string_view& textToPrint,const int& colorCode, const int& backgroundColor)
 {
-    SetConsoleTextAttribute(hConsole, colorCode+16*backgroundColor); // every *16* color codes will loop
+    SetConsoleTextAttribute(hConsole, colorCode+16*backgroundColor); 
     std::cout << textToPrint;
     SetConsoleTextAttribute(hConsole, keys::defaultColor);
 }
@@ -299,7 +343,7 @@ void printMainMenu()
     printWindow(Windows::mainWindowSizeX, Windows::mainWindowSizeY, Windows::mainWindowStartPOS,color::dBlack,color::dWhite);
     //clearMainWindow();
     printFormat(formattedText::mainTitle, { 22,5 }, UI_Colors::mainDisplay, UI_Colors::mainBackground);
-    gotoCOORD({19,13}); printColor("========================================================================================================================", UI_Colors::mainDisplay);
+    gotoCOORD({19,13}); printColor(std::string(120, '='), UI_Colors::mainDisplay);
     
     selectionMaps::g_mainMenuMap.printAll();
     //printButtons<7,3>(selectionLists::mainMenuOptions);
@@ -322,12 +366,12 @@ void clearMainWindow()
     for (int i{ 0 }; i < 41; ++i)
     {
         gotoCOORD(displayPos);
-        printColor("                                                                                                                        ", keys::defaultColor);
+        printColor(std::string(120,' '), keys::defaultColor);
         if (i > 0) printColor("  ", keys::defaultColor, color::dWhite);
         ++displayPos.Y;
     }
     displayPos.X += 2;
-    gotoCOORD(displayPos); printColor("                                                                                                                        ", keys::defaultColor, color::dWhite);
+    gotoCOORD(displayPos); printColor(std::string(120, ' '), keys::defaultColor, color::dWhite);
 }
 
 void printWindow(const short& sizeX, const short& sizeY, COORD pos, const int& colorFG, const int& colorBG)
@@ -386,22 +430,17 @@ void mostrarInformacionComputadora(DoubleList<Computadora>::Node* target, COORD 
 
 // ************************************************ Console Functions ************************************************
 
-// Sets the size of the Console (cmd)
 void setWindowSize(int width, int height)
 {
-    // Get the handle to the console
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    // Set the screen buffer size
     COORD bufferSize = { static_cast<SHORT>(width), static_cast<SHORT>(height) };
     SetConsoleScreenBufferSize(hConsole, bufferSize);
 
-    // Set the window size
     SMALL_RECT windowSize = { 0, 0, static_cast<SHORT>(width - 1), static_cast<SHORT>(height - 1) };
     SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 }
 
-// Forbids any resizing on the console
 void lockConsole()
 {
     HWND consoleWindow = GetConsoleWindow();
@@ -533,7 +572,7 @@ int selectComputer(DoubleList<Computadora> lista, const COORD& pos, int x, int y
                 assignerPos.Y += 5;
             }
         } // Ended Booking
-        // Linking Bottoms to page controls
+        // Linkeando botones finales a los botones de control
         for (int i{ 0 }; i < x; ++i)
         {
             memberLinker->linkTo(Direction::down, computerMap.head, false);
@@ -541,16 +580,16 @@ int selectComputer(DoubleList<Computadora> lista, const COORD& pos, int x, int y
             memberLinker = memberLinker->left;
         }
 
-        if (!runner.head) break; // Adding anothe page if it still exists data;
+        if (!runner.head) break; // Añadiendo otra pagina si todavia existiese data
 
         pages.append(pages.createEntry({}));
         pages.head = pages.head->next;
         timesAdded = 0;
 
     } while (1);
-    while (pages.head->prev) pages.head = pages.head->prev; // Reset page Double List
-    int page{ 1 }; // Start by default on page 1
-    selectionMaps::SelectionMap::Member* pageChanger{ computerMap.getAt(5) }; // Getting currently last pointer (to use for page change later)
+    while (pages.head->prev) pages.head = pages.head->prev; 
+    int page{ 1 };
+    selectionMaps::SelectionMap::Member* pageChanger{ computerMap.getAt(5) }; 
     computerMap.append(pages.head->data.head);
     computerMap.traveler = pageChanger->next;
     // Lets See then

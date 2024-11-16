@@ -22,7 +22,8 @@ int main()
     // Opciones de Inicio para la consola
     setWindowSize(160, 50);
     lockConsole();
-    
+    system("CLS");
+
     // Start Menu
 
     printColor(menuDefs::background, color::dBlack, color::bBlack);  // Background
@@ -75,7 +76,6 @@ int main()
 
             clearMainWindow();      // Funcion para limpiar la pantalla
             mainReportes();         // FUNCION PRINCIPAL
-            _getch();               // Pausar la Consola
             printMainMenu();        // Reimprimir toda la ventana principal
 
             break;
