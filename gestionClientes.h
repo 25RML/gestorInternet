@@ -42,6 +42,11 @@ constexpr std::string_view nombresClientes[20]
 // Declaraciones de Funcion
 void mainGestionClientes();
 
+#ifdef ADDED_PARTS
+
+bool verificarConflicto(const Sesion& nuevaSesion, ReservaNode* colaReservas);
+
+#endif // ADDED_PARTS
 /*
 void cargarEstado();
 void guardarEstado();

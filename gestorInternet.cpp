@@ -24,6 +24,8 @@ int main()
     lockConsole();
     system("CLS");
 
+    // Cardar Datos de las Computadoras
+    cargarDatos("computadoras.txt");
     // Start Menu
 
     printColor(menuDefs::background, color::dBlack, color::bBlack);  // Background
@@ -83,6 +85,9 @@ int main()
             clearMainWindow();
             printCOORD("Gracias por usar el programa", { 67,23 });
             printCOORD("Pulse cualquier tecla para continuar...", { 62,24 });
+
+            guardarDatos("computadoras.txt");   // Guardando los datos al salir del programa
+
             _getch();
             return 0;
         }

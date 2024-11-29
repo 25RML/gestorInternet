@@ -9,72 +9,78 @@
 
 // *************************************** Funciones ***************************************
 
+/*
+*	FUNCION mainReservas()
+*	:: Todo el proceso desde que se elije desde el menú, hasta que se sale
+*	:: - Las funciones de salida (de la opción) se ejecutan desde esta funcion también
+*/
 void mainReservas()
 {
-	// Imprimir Pseudo-Interfaz
-	printColor(menuDefs::background, color::dBlack, color::bBlack);  // Reset Background
-	printWindow(25, 16, {7,4},color::dBlack,color::dYellow); // Print Window
-	printWindow(110, 40, { 39,4 }, color::dBlack, color::dBlue);
-	printWindow(60, 2, { 65,3 }, color::bAqua, color::bBlue);
-	//printButtons<3, 3>(selectionLists::reservasOptions);
-	gotoCOORD({ 78,4 }); printColor("\033[4mGESTOR DE RESERVAS DE COMPUTADORAS\033[0m", color::dBlack, color::bAqua);
-
-	gotoCOORD({ 0,0 }); // Estetico solamente, volver a 0,0
+	/*
+	*	------------------------ Funciones para imprimir las interfaces ------------------------ 
+	*/
+	printColor(menuDefs::background, color::dBlack, color::bBlack);								// Imprime el fondo (recuadro de color gris que cubre toda la ventana)
+	printWindow(25, 16, {7,4},color::dBlack,color::dYellow);									// Imprime una ventana con fondo amarillo oscuro.
+	printWindow(110, 40, { 39,4 }, color::dBlack, color::dBlue);								// Imprime una ventana con fondo azul oscuro.
+	printWindow(60, 2, { 65,3 }, color::bAqua, color::bBlue);									// Imprime una ventana con fondo azul oscuro y de color aqua
+	gotoCOORD({ 78,4 }); printColor("\033[4mGESTOR DE RESERVAS DE COMPUTADORAS\033[0m", color::dBlack, color::bAqua);	// Imprime un texto sobre la ventana coloreada anterior
+	gotoCOORD({ 0,0 });																			// Regresa a 0,0 para el cursor
+	/*
+	*	------------------------ Bucle de recorrido para las opciones principales ------------------------
+	*/
 	int inputSelection{ 0 };
 	bool continueSelection{ true };
 	while (continueSelection)
 	{
-		selectionMaps::g_reservasMap.printAll();
-		switch (inputSelection = selectionMaps::g_reservasMap.startSelection(true))
-		//switch (inputSelection = setSelection<3, 3>(selectionLists::reservasOptions, selectionMaps::reportesMap))
+		selectionMaps::g_reservasMap.printAll();												// Imprime todo el mapa de botones
+		switch (inputSelection = selectionMaps::g_reservasMap.startSelection(true))				// Comienza la seleccion de una opción
 		{
-		case 1:
+		case 1:		// -------------------------------- Opcion 1: Hacer Reserva --------------------------------
 			{
-				printRectangle({ 103,8 }, 1, 36, color::bBlue, '#');
-				//int idSelector{};
+				printRectangle({ 103,8 }, 1, 36, color::bBlue, '#');										// Linea Separadora de Interfaz (estético)
 				do
 				{
-					printRectangle({ 104,8 }, 44, 36, color::dBlack);
-					// Selection
-					int idSelector{ selectComputer(g_registroComputadoras, { 43,9 }, 5, 5) };		// Elegir Computadora
-					if (!idSelector) break;
-					// Printing UI
-					printFormat(formattedText::Elements::computerInfo, { 106,8 }, color::dBlack, color::dBlue);
-					DoubleList<Computadora>::Node* target{ g_registroComputadoras.getAt(idSelector - 1) };
-					mostrarInformacionComputadora(target, { 107,12 });
-					gotoCOORD({ 105,22 }); printColor(std::string(43, '#'), color::bBlue, color::dBlack);
-
+					printRectangle({ 104,8 }, 44, 36, color::dBlack);										// Reimprimir fondo negro (cleanup)
+					// ========= Seleccion de Computadoras ========= 
+					int idSelector{ selectComputer(g_registroComputadoras, { 43,9 }, 5, 5) };				// Elegir Computadora
+					if (!idSelector) break;																	// Si es volver (idSelector==0), salir del bucle
+					DoubleList<Computadora>::Node* target{ g_registroComputadoras.getAt(idSelector - 1) };	// Vincular la computadora elegida a un puntero
+					// ========= Imprimir UI ========= 
+					printFormat(formattedText::Elements::computerInfo, { 106,8 }, color::dBlack, color::dBlue);	// Imprimir Elemento de Interfaz
+					mostrarInformacionComputadora(target, { 107,12 });										// Informacion (UI)
+					gotoCOORD({ 105,22 }); printColor(std::string(43, '#'), color::bBlue, color::dBlack);	// Imprimir Separador (UI)
+					// ========= Bucle de Crear Reserva con computadora escogida ========= 
 					do
 					{
-						printRectangle({ 104,24 }, 44, 20, color::dBlack);
+						printRectangle({ 104,24 }, 44, 20, color::dBlack);									// Reimprimir recuadro inferior derecho negro (cleanup)
 
-						selectionMaps::g_confirmReservasMap.printAll();
-						idSelector = selectionMaps::g_confirmReservasMap.startSelection(true);
-						if (idSelector == 2) break;
-						// ********************************** HACER RESERVA **********************************
-						printRectangle({ 104,24 }, 44, 16, color::dBlack);
-
-						printFormat(formattedText::Elements::makeReserve, { 106,24 }, color::dBlack, color::dBlue);
-						// Fecha
-						gotoCOORD({ 107,28 }); printColor("Fecha : ", color::dBlue, color::dBlack);
-						Fecha fechaReserve{ getFecha({114,32},true) };
-						gotoCOORD({ 115,28 });
-						if (fechaReserve.day < 10) std::cout << "0";
-						std::cout << fechaReserve.day << '/';
-						if (fechaReserve.month < 10) std::cout << "0";
-						std::cout << fechaReserve.month << "/";
-						std::cout << fechaReserve.year;
-						// Hora
-						gotoCOORD({ 130,28 }); printColor("Hora : ", color::dBlue, color::dBlack);
+						selectionMaps::g_confirmReservasMap.printAll();										// Imprimir botones de Confirmación
+						idSelector = selectionMaps::g_confirmReservasMap.startSelection(true);				// Comenzar selección de botones de confirmación
+						if (idSelector == 2) break;															// Volver si no se confirmó (opcion 2)
+						/*
+						 ********************************** PROCESO DE HACER RESERVA **********************************
+						*/
+						printRectangle({ 104,24 }, 44, 16, color::dBlack);									// Reimprimir recuadro inferior derecho negro (cleanup)
+						printFormat(formattedText::Elements::makeReserve, { 106,24 }, color::dBlack, color::dBlue);	// Elemento Gráfico
+						// ========= Introducir Fecha =========
+						gotoCOORD({ 107,28 }); printColor("Fecha : ", color::dBlue, color::dBlack);			// UI
+						Fecha fechaReserve{ getFecha({114,32},true) };										
+						gotoCOORD({ 115,28 });																// -
+						if (fechaReserve.day < 10) std::cout << "0";										//  |
+						std::cout << fechaReserve.day << '/';												//  |- Impresión de la fecha
+						if (fechaReserve.month < 10) std::cout << "0";										//  |
+						std::cout << fechaReserve.month << "/" << fechaReserve.year;						// -
+						// ========= Introducir Hora =========
+						gotoCOORD({ 130,28 }); printColor("Hora : ", color::dBlue, color::dBlack);			// UI
 						Hora horaReserve{ getHora({119,32},true) };
-						gotoCOORD({ 137,28 });
-						if (horaReserve.hour < 10) std::cout << "0";
-						std::cout << horaReserve.hour << ':';
-						if (horaReserve.minute < 10) std::cout << "0";
-						std::cout << horaReserve.minute;
+						gotoCOORD({ 137,28 });																// -
+						if (horaReserve.hour < 10) std::cout << "0";										//  |
+						std::cout << horaReserve.hour << ':';												//  |- Impresión de la hora
+						if (horaReserve.minute < 10) std::cout << "0";										//  |
+						std::cout << horaReserve.minute;													// -
 
 						FullTime tiempoInicio{ horaReserve,fechaReserve };
-						// Especificar Cantidad de Hora
+						// ========= Especificar N° de horas a usar el servicio =========
 						gotoCOORD({ 107,29 }); printColor("Tiempo de Uso : ", color::dBlue, color::dBlack);
 						Hora tiempoDeUso{ getHora({119,32},true) };
 						gotoCOORD({ 137,29 });
@@ -120,7 +126,7 @@ void mainReservas()
 				} while (1);
 			}
 			break;
-		case 2:
+		case 2:		// -------------------------------- Opcion 2: Ver Historial de Reservas --------------------------------
 			{
 				COORD linePrint{ 103,8 };
 				for (int i{ 0 }; i < 36; ++i)
@@ -132,7 +138,7 @@ void mainReservas()
 			}
 			selectComputer(g_registroComputadoras, { 43,9 }, 5, 5);
 			break;
-		case 3:
+		case 3:		// -------------------------------- Opcion 3: Volver al menú principal --------------------------------
 			continueSelection = false;
 			break;
 		}

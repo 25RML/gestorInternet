@@ -1,0 +1,5 @@
+Reporte de Uso de Computadora ID: 1
+Estado: 0 (0: Libre, 1: Ocupada, 2: Reservada, 3: No Disponible)
+Tiempo de Uso Total: 0 horas
+
+No hay sesiones registradas.

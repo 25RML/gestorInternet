@@ -52,7 +52,19 @@ void mainGestionClientes()
                 do {
                     pc = rand() % sizeRegistro;
                     computadora = g_registroComputadoras.getAt(pc);
-                } while (computadora->data.estado != 0); // Buscar por computadora Libre   NOTA: VA A ITERAR INFINITAMENTE SI NO EXISTE COMPUTADORA LIBRE (ARREGLAR ESO PORFA)
+                }
+#ifdef ADDED_PARTS
+                while (computadora->data.estado != 0 ||
+                    !verificarConflicto(/* Sesión que estás creando */, computadora->data.colaReservas)); // Verifica conflicto
+#endif // ADDED_PARTS
+#ifndef ADDED_PARTS
+                while (computadora->data.estado != 0);
+#endif // !ADDED_PARTS
+
+                
+                
+                
+                // *********************************** FIN AGREGADO PARA N4 ********************************
 
                 computadora->data.estado = 1;                       // Cambia el estado a "Ocupado"
                 std::string cliente{ nombresClientes[rand() % 20] };// Se usa 20 porque solo existen 20 nombres, no hay otra forma :p
@@ -60,6 +72,18 @@ void mainGestionClientes()
                 std::time_t currentDate{}; std::time(&currentDate); //
                 std::tm dateInfo{};                                 //  Usado para obtener la Hora (y Fecha)
                 localtime_s(&dateInfo, &currentDate);               //
+
+                SingleList<Sesion>::Node* entry{ g_registroSesiones.createEntry(     // Creamos la sesion y la almacenamos en el registro global de sesiones (o algo asi)
+                    {
+                        computadora->data.ID,       // ID Computadora
+                        0,                          // ID Cliente, 0 porque no se usa el struct de cliente (?) pd:necesita fix
+                        {static_cast<short>(dateInfo.tm_hour),static_cast<short>(dateInfo.tm_min)}, // Hora de Inicio (static cast porque use short en lugar de int :c)
+                        {23,59},                    // Hora de Salida, como es hora libre, la seteamos al maximo (solo acaba cuando el gerente dice que acaba, a menos que acabe el dia primero)
+                        {static_cast<short>(dateInfo.tm_year + 1900),static_cast<short>(dateInfo.tm_mon),static_cast<short>(dateInfo.tm_mday)},   // Fecha (largaso por mi error del short :c)
+                        0.0                         // Costo (en 0 porque todavia no finalizo la sesion :p)
+                    }
+                ) };
+
 
                 g_registroSesiones.push(g_registroSesiones.createEntry(     // Creamos la sesion y la almacenamos en el registro global de sesiones (o algo asi)
                     {
@@ -219,6 +243,46 @@ void mainGestionClientes()
     gotoCOORD({ 0,0 });
     printColor(menuDefs::background, color::dBlack, color::bBlack);
 }
+
+// *********************************** AGREGADO PARA N4 ***********************************
+
+#ifdef ADDED_PARTS
+
+bool verificarConflicto(const Sesion& nuevaSesion, ReservaNode* colaReservas) {
+    if (!colaReservas) {
+        // No hay reservas, no hay conflicto.
+        return true;
+    }
+
+    // Buscar la reserva más reciente.
+    ReservaNode* reservaReciente = colaReservas;
+    while (reservaReciente->next) {
+        reservaReciente = reservaReciente->next;
+    }
+
+    // Verificar conflicto con la reserva más reciente.
+    const Sesion& ultimaReserva = reservaReciente->reserva;
+    if (nuevaSesion.fecha.year != ultimaReserva.fecha.year ||
+        nuevaSesion.fecha.month != ultimaReserva.fecha.month ||
+        nuevaSesion.fecha.day != ultimaReserva.fecha.day) {
+        // Las fechas no coinciden, no hay conflicto.
+        return true;
+    }
+
+    // Comprobar colisión de horarios.
+    if (nuevaSesion.horaInicio.hour < ultimaReserva.horaSalida.hour ||
+        (nuevaSesion.horaInicio.hour == ultimaReserva.horaSalida.hour &&
+            nuevaSesion.horaInicio.minute < ultimaReserva.horaSalida.minute)) {
+        return false; // Hay conflicto de horarios.
+    }
+
+    return true; // No hay conflicto.
+}
+
+#endif // !ADDED_PARTS
+
+
+
 
 
 // ************************************************************************** REFERENCIA **************************************************************************
