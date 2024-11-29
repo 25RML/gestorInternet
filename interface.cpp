@@ -711,30 +711,43 @@ Hora getHora(const COORD& pos, const bool cleanup)
     hourMap.append(hourMap.createMember({ selectionMaps::instDisplaySet<3>(formattedText::confirmOperation),movePos,selectionMaps::secondaryColorSet }));
     // Vinculando Botones
     hourMap.reset();
-    selectionMaps::SelectionMap::Member* memberLinker{ hourMap.getAt(4) }; 
+    selectionMaps::SelectionMap::Member* memberLinker{ hourMap.head }; 
     selectionMaps::SelectionMap::Member* minuteBox{ memberLinker };
     selectionMaps::SelectionMap::Member* horaBox{};
-    selectionMaps::SelectionMap::Member* auxLinker{ hourMap.head };
+    
     {
         selectionMaps::SelectionMap::Member* confirmLinker{ hourMap.getAt(6) }; confirmLinker->isReactive = true;
-        for (int i{ 0 }; i < 3; ++i)
+
+        for (int i{ 0 }; i < 2; ++i)
         {
-            auxLinker = auxLinker->next;
-            hourMap.traveler->linkTo(Direction::right, memberLinker, false);
-            if (i != 2) hourMap.traveler->linkTo(Direction::down, auxLinker);
-            else hourMap.traveler->linkTo(Direction::down, confirmLinker, false);
-            hourMap.traveler = hourMap.traveler->next;
+            for (int j{ 0 }; j < 3; ++j)
+            {
+                hourMap.traveler = hourMap.traveler->next;
+                if (j == 1)
+                {
+                    switch (i)
+                    {
+                    case 0:
+                        horaBox = memberLinker;
+                    case 1:
+                        minuteBox = memberLinker;
+                    }
+                }
+                if (j != 2)
+                {
+                    memberLinker->linkTo(Direction::down, hourMap.traveler);
+                    if (i > 0) memberLinker->left->down->linkTo(Direction::right, hourMap.traveler);
+                }
+                else
+                {
+                    memberLinker->linkTo(Direction::down, confirmLinker, false);
+                    memberLinker->up->up->linkTo(Direction::right, hourMap.traveler);
+                }
+
+                memberLinker = hourMap.traveler;
+            }
         }
-        memberLinker = hourMap.getAt(1);
-        horaBox = memberLinker;
-        for (int i{ 0 }; i < 3; ++i)
-        {
-            auxLinker = auxLinker->next;
-            hourMap.traveler->linkTo(Direction::left, memberLinker, false);
-            if (i != 2) hourMap.traveler->linkTo(Direction::down, auxLinker);
-            else hourMap.traveler->linkTo(Direction::down, confirmLinker, false);
-            hourMap.traveler = hourMap.traveler->next;
-        }
+
     }
     
     hourMap.reset();

@@ -1,10 +1,14 @@
 // Includes
 #include <iostream>
 
+#include <fstream>   // Guardado de Archivos
+#include <sstream>   // Guardado de Archivos
+
 #include "global.h"
 #include "gestionComputadoras.h"
 #include "interface.h" // para el gotoCOORD()
-#include "gestionComputadoras.h"
+
+
 
 // *************************************** Funciones ***************************************
 
@@ -112,3 +116,126 @@ void mainGestionComputadoras()
 	gotoCOORD({ 0,0 });
 	printColor(menuDefs::background, color::dBlack, color::bBlack);
 }
+
+// Funciones Asociadas
+
+//-------------------------------------------------------------------------------------------- -
+//Función para guardar datos
+//-------------------------------------------------------------------------------------------- -
+void guardarDatos(const std::string & filename) {
+	std::ofstream archivo(filename);
+
+	// Verificar si el archivo se abrió correctamente
+	if (!archivo) {
+		std::cerr << "No se pudo abrir el archivo para escribir." << std::endl;
+		return;
+	}
+
+	// Recorrer la lista y guardar cada computadora
+	DoubleList<Computadora>::Node* current = g_registroComputadoras.head;
+	while (current) {
+		const Computadora& comp = current->data;
+
+		// Escribir los datos de la computadora en formato texto
+		archivo << comp.ID << "\n"
+			<< comp.modificadorDePrecio << "\n"
+			<< comp.estado << "\n"
+			<< comp.tiempoDeUsoTotalSegundos << "\n";
+
+		// Guardar las reservas
+		SingleList<Reserva>::Node* reservaNode = comp.colaReservas.head;
+		while (reservaNode) {
+			const Reserva& reserva = reservaNode->data;
+
+			archivo << reserva.fecha.year << " "
+				<< reserva.fecha.month << " "
+				<< reserva.fecha.day << " "
+				<< reserva.horaInicio.hour << " "
+				<< reserva.horaInicio.minute << " "
+				<< reserva.horaFinal.hour << " "
+				<< reserva.horaFinal.minute << "\n";
+
+			reservaNode = reservaNode->next;
+		}
+
+		// Escribir un separador para las reservas
+		archivo << "---\n";
+
+		current = current->next;
+	}
+
+	archivo.close();
+
+}
+//--------------------------------------------------------------------------------------------------------
+//Función para cargar datos
+//--------------------------------------------------------------------------------------------------------
+void cargarDatos(const std::string & filename) {
+	std::ifstream archivo(filename);
+
+	if (!archivo) {
+		std::cerr << "Error al abrir el archivo para cargar datos." << std::endl;
+		return;
+	}
+
+	// Limpiar los datos existentes
+	g_registroComputadoras.deleteAll();
+
+	Computadora comp;
+	std::string linea;
+	int step = 0;
+
+	while (std::getline(archivo, linea)) {
+
+		// Si la línea es un separador de computadora
+		if (linea == "---") {
+			// Insertar la computadora en la lista
+			DoubleList<Computadora>::Node* newNode = g_registroComputadoras.createEntry(comp);
+			g_registroComputadoras.append(newNode);
+
+			// Reiniciar la computadora y el paso
+			comp = Computadora();
+			step = 0;
+			continue;
+		}
+
+		// Leer los datos de la computadora
+		try {
+			if (step == 0) {
+				comp.ID = std::stoi(linea);
+			}
+			else if (step == 1) {
+				comp.modificadorDePrecio = std::stof(linea);
+			}
+			else if (step == 2) {
+				comp.estado = std::stoi(linea);
+			}
+			else if (step == 3) {
+				comp.tiempoDeUsoTotalSegundos = std::stoi(linea);
+			}
+			else {
+				// Leer las reservas y agregar a la lista de reservas de la computadora
+				Reserva reserva;
+				std::istringstream iss(linea);
+				if (iss >> reserva.fecha.year >> reserva.fecha.month >> reserva.fecha.day
+					>> reserva.horaInicio.hour >> reserva.horaInicio.minute
+					>> reserva.horaFinal.hour >> reserva.horaFinal.minute) {
+
+					// Crear nodo de reserva y agregarlo a la lista de reservas de la computadora
+					SingleList<Reserva>::Node* reservaNode = comp.colaReservas.createEntry(reserva);
+					comp.colaReservas.push(reservaNode); // Usar push para agregar a la lista simple
+				}
+			}
+
+			++step;
+			if (step > 3) step = 4; // Después de leer los 4 primeros datos, leer reservas
+		}
+		catch (const std::exception& e) {
+			std::cerr << "Error al procesar la línea: " << linea << " - " << e.what() << std::endl;
+		}
+	}
+
+	archivo.close();
+
+}
+//------------------------------------------------------------------------------------------------------------

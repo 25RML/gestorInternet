@@ -16,6 +16,18 @@ struct Hora
 {
     short hour{};
     short minute{};
+
+    void sumarTiempo(Hora tiempoHoras)
+    {
+        minute += tiempoHoras.minute;
+        hour += tiempoHoras.hour;
+
+        short hourPass{ minute /= 60 };
+        minute %= 60;
+        hour += hourPass;
+
+        hour %= 24;
+    }
 };
 
 struct FullTime
