@@ -22,9 +22,7 @@ namespace selectionMaps
     namespace MainMenu
     {
         const Button gestionDeComputadoras{ instDisplaySet<3>(formattedText::gestionDeComputadoras),{54,15}, primaryColorSet };
-        const Button gestionDeSesiones{ instDisplaySet<3>(formattedText::gestionDeSesiones),{54,20}, primaryColorSet };
         const Button gestionDeClientes{ instDisplaySet<3>(formattedText::gestionDeClientes),{54,25}, primaryColorSet };
-        const Button facturacion{ instDisplaySet<3>(formattedText::facturacion),{54,30}, primaryColorSet };
         const Button reservas{ instDisplaySet<3>(formattedText::reservas),{54,35}, primaryColorSet };
         const Button reportes{ instDisplaySet<3>(formattedText::reportes),{54,40}, primaryColorSet };
         const Button salir{ instDisplaySet<3>(formattedText::salir),{115,38}, secondaryColorSet };
@@ -96,19 +94,17 @@ namespace selectionMaps
             using Direction = SelectionMap::Member::Direction;
             // Instanciacion de los miembros
             map.append(map.createMember(MainMenu::gestionDeComputadoras));
-            map.append(map.createMember(MainMenu::gestionDeSesiones));
             map.append(map.createMember(MainMenu::gestionDeClientes));
-            map.append(map.createMember(MainMenu::facturacion));
             map.append(map.createMember(MainMenu::reservas));
             map.append(map.createMember(MainMenu::reportes));
             map.append(map.createMember(MainMenu::salir));
             // Asignacion de Rutas
-            SelectionMap::Member* end{ map.getAt(6) };
+            SelectionMap::Member* end{ map.getAt(4) };
             SelectionMap::Member* target{ map.head };
             map.reset();
             map.traveler->linkTo(Direction::right, end,false);
             map.traveler->right->isReactive = true;
-            for (int i{ 0 }; i < 5; ++i)
+            for (int i{ 0 }; i < 3; ++i)
             {
                 map.traveler = map.traveler->next;
                 target->linkTo(Direction::down, map.traveler);
