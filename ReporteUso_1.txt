@@ -1,0 +1,5 @@
+Reporte de Uso de Computadora ID: 1
+Estado: 0 (0: Libre, 1: Ocupada, 2: Reservada, 3: No Disponible)
+Tiempo de Uso Total: 120 horas
+
+Fecha: 3/12/2024, Hora Inicio: 15:14, Hora Salida: 15:16, Costo: $0.03
