@@ -21,10 +21,10 @@ namespace selectionMaps
     // UPDATED
     namespace MainMenu
     {
-        const Button gestionDeComputadoras{ instDisplaySet<3>(formattedText::gestionDeComputadoras),{54,15}, primaryColorSet };
+        const Button gestionDeComputadoras{ instDisplaySet<3>(formattedText::gestionDeComputadoras),{54,20}, primaryColorSet };
         const Button gestionDeClientes{ instDisplaySet<3>(formattedText::gestionDeClientes),{54,25}, primaryColorSet };
-        const Button reservas{ instDisplaySet<3>(formattedText::reservas),{54,35}, primaryColorSet };
-        const Button reportes{ instDisplaySet<3>(formattedText::reportes),{54,40}, primaryColorSet };
+        const Button reservas{ instDisplaySet<3>(formattedText::reservas),{54,30}, primaryColorSet };
+        const Button reportes{ instDisplaySet<3>(formattedText::reportes),{54,35}, primaryColorSet };
         const Button salir{ instDisplaySet<3>(formattedText::salir),{115,38}, secondaryColorSet };
     }
     namespace Reservas

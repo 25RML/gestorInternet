@@ -145,6 +145,7 @@ void mainReservas()
 			}
 			break;
 		case 2:		// -------------------------------- Opcion 2: Ver Historial de Reservas --------------------------------
+		{
 			{
 				COORD linePrint{ 103,8 };
 				for (int i{ 0 }; i < 36; ++i)
@@ -154,8 +155,34 @@ void mainReservas()
 					++linePrint.Y;
 				}
 			}
-			selectComputer(g_registroComputadoras, { 43,9 }, 5, 5);
-			break;
+			int idSelector{ selectComputer(g_registroComputadoras, { 43,9 }, 5, 5) };
+			if (!idSelector) break;
+			DoubleList<Computadora>::Node* target{ g_registroComputadoras.getAt(idSelector - 1) };
+			SingleList<Reserva>::Node* reservaDisplay{ target->data.colaReservas.head };
+
+			COORD printPos{ 105,14 };
+			while (reservaDisplay)
+			{
+				gotoCOORD(printPos);
+
+				printColor("- Reserva: ", color::bPurple);
+				std::cout << reservaDisplay->data.fecha.day << '/';
+				std::cout << reservaDisplay->data.fecha.month << '/'; 
+				std::cout << reservaDisplay->data.fecha.year; ++printPos.Y; gotoCOORD(printPos); std::cout << " - Inicio: ";
+				if (reservaDisplay->data.horaInicio.hour < 10) std::cout << "0";
+				std::cout << reservaDisplay->data.horaInicio.hour << ":";
+				std::cout << reservaDisplay->data.horaInicio.minute << ++printPos.Y; gotoCOORD(printPos); std::cout << " - Final: ";
+				if (reservaDisplay->data.horaInicio.hour < 10) std::cout << "0";
+				std::cout << reservaDisplay->data.horaFinal.hour << ":";
+				std::cout << reservaDisplay->data.horaFinal.minute;
+
+				++printPos.Y;
+				reservaDisplay = reservaDisplay->next;
+			}
+
+
+		}
+		break;
 		case 3:		// -------------------------------- Opcion 3: Volver al menú principal --------------------------------
 			continueSelection = false;
 			break;

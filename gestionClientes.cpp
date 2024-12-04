@@ -1,10 +1,16 @@
 // Includes
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <ctime>
+#include <map>
 
 #include "gestionComputadoras.h"
 #include "interface.h" // para el gotoCOORD()
 #include "gestionClientes.h"
+#include "gestionSesiones.h" // Para 'guardarSesiones' y 'cargarSesiones'
 #include "global.h"
+#include "tempFile.h" // Para la definición de Sesion
 // *************************************** Variables ***************************************
 
 extern std::map<std::string, int> horasConteo;

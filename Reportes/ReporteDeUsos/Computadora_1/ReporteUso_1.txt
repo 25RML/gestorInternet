@@ -2,6 +2,4 @@ Reporte de Uso de Computadora ID: 1
 Estado: 0 (0: Libre, 1: Ocupada, 2: Reservada, 3: No Disponible)
 Tiempo de Uso Total: 0 horas
 
-Fecha: 2/11/2024, Hora Inicio: 23:23, Hora Salida: 23:23, Costo: $0.00
-Fecha: 2/11/2024, Hora Inicio: 23:23, Hora Salida: 23:59, Costo: $0.00
-Fecha: 2/11/2024, Hora Inicio: 23:23, Hora Salida: 23:59, Costo: $0.00
+No hay sesiones registradas.
