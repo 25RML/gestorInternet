@@ -61,24 +61,42 @@ void mainReservas()
 						 ********************************** PROCESO DE HACER RESERVA **********************************
 						*/
 						printRectangle({ 104,24 }, 44, 16, color::dBlack);									// Reimprimir recuadro inferior derecho negro (cleanup)
-						printFormat(formattedText::Elements::makeReserve, { 106,24 }, color::dBlack, color::dBlue);	// Elemento Gráfico
-						// ========= Introducir Fecha =========
-						gotoCOORD({ 107,28 }); printColor("Fecha : ", color::dBlue, color::dBlack);			// UI
-						Fecha fechaReserve{ getFecha({114,32},true) };										
-						gotoCOORD({ 115,28 });																// -
-						if (fechaReserve.day < 10) std::cout << "0";										//  |
-						std::cout << fechaReserve.day << '/';												//  |- Impresión de la fecha
-						if (fechaReserve.month < 10) std::cout << "0";										//  |
-						std::cout << fechaReserve.month << "/" << fechaReserve.year;						// -
-						// ========= Introducir Hora =========
-						gotoCOORD({ 130,28 }); printColor("Hora : ", color::dBlue, color::dBlack);			// UI
-						Hora horaReserve{ getHora({119,32},true) };
-						gotoCOORD({ 137,28 });																// -
-						if (horaReserve.hour < 10) std::cout << "0";										//  |
-						std::cout << horaReserve.hour << ':';												//  |- Impresión de la hora
-						if (horaReserve.minute < 10) std::cout << "0";										//  |
-						std::cout << horaReserve.minute;													// -
+						printFormat(formattedText::Elements::makeReserve, { 106,24 }, color::dBlack, color::dBlue);	// Elemento Gr fico
+						// -
 
+						Fecha fechaReserve = { 0, 0, 0 };
+						Hora horaReserve = { 0, 0 };
+						bool reservaValida = false;
+
+						while (!reservaValida) {
+							// ========= Introducir Fecha =========
+							gotoCOORD({ 107,28 }); printColor("Fecha : ", color::dBlue, color::dBlack);			// UI
+							Fecha fechaReserve{ getFecha({114,32},true) };
+							gotoCOORD({ 115,28 });																// -
+							if (fechaReserve.day < 10) std::cout << "0";										//  |
+							std::cout << fechaReserve.day << '/';												//  |- Impresi n de la fecha
+							if (fechaReserve.month < 10) std::cout << "0";										//  |
+							std::cout << fechaReserve.month << "/" << fechaReserve.year;						// -
+							// ========= Introducir Hora =========
+							gotoCOORD({ 130,28 }); printColor("Hora : ", color::dBlue, color::dBlack);			// UI
+							Hora horaReserve{ getHora({119,32},true) };
+							gotoCOORD({ 137,28 });																// -
+							if (horaReserve.hour < 10) std::cout << "0";										//  |
+							std::cout << horaReserve.hour << ':';												//  |- Impresi n de la hora
+							if (horaReserve.minute < 10) std::cout << "0";										//  |
+							std::cout << horaReserve.minute;													// -
+							if (esReservaEnElPasado(fechaReserve, horaReserve)) {
+								gotoCOORD({ 102, 32 });
+								printColor("¡Error! No se puede hacer una reserva en el pasado.", color::bRed);
+								gotoCOORD({ 100, 33 });
+								printColor("Por favor, ingrese una fecha y hora válidas.", color::bRed);
+								_getch();
+							}
+							else {
+								FullTime tiempoInicio{ horaReserve, fechaReserve };
+								reservaValida = true;
+							}
+						}
 						FullTime tiempoInicio{ horaReserve,fechaReserve };
 						// ========= Especificar N° de horas a usar el servicio =========
 						gotoCOORD({ 107,29 }); printColor("Tiempo de Uso : ", color::dBlue, color::dBlack);
@@ -177,4 +195,49 @@ int checkParity(const SingleList<Reserva> origin, const Reserva& toAdd)
 	}
 	if (!traveler) ++times;
 	return times-1;
+}
+Fecha obtenerFechaActual() {
+	std::time_t t = std::time(nullptr);
+	std::tm now;
+	localtime_s(&now, &t);
+
+	Fecha fechaActual;
+	fechaActual.year = now.tm_year + 1900;  // El año empieza desde 1900
+	fechaActual.month = now.tm_mon + 1;     // El mes empieza desde 0
+	fechaActual.day = now.tm_mday;           // Día del mes
+
+	return fechaActual;
+}
+
+// Función para obtener la hora actual del sistema
+Hora obtenerHoraActual() {
+	std::time_t t = std::time(nullptr);
+	std::tm now;
+	localtime_s(&now, &t);
+
+	Hora horaActual;
+	horaActual.hour = now.tm_hour;    // Hora
+	horaActual.minute = now.tm_min;   // Minuto
+
+	return horaActual;
+}
+
+bool esReservaEnElPasado(Fecha fechaReserva, Hora horaReserva) {
+	Fecha fechaActual = obtenerFechaActual();
+	Hora horaActual = obtenerHoraActual();
+
+	if (fechaReserva.year < fechaActual.year) return true; // Comparar año, mes, día
+	if (fechaReserva.year == fechaActual.year) {
+		if (fechaReserva.month < fechaActual.month) return true;
+		if (fechaReserva.month == fechaActual.month) {
+			if (fechaReserva.day < fechaActual.day) return true;
+			if (fechaReserva.day == fechaActual.day) {
+				if (horaReserva.hour < horaActual.hour) return true; // Comparar hora y minuto
+				if (horaReserva.hour == horaActual.hour) {
+					if (horaReserva.minute < horaActual.minute) return true;
+				}
+			}
+		}
+	}
+	return false;
 }

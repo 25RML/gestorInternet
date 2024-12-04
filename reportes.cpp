@@ -11,6 +11,7 @@
 #include "reportes.h"   
 #include "global.h"
 
+#include <filesystem> // Para trabajar con directorios
 // *************************************** Funciones ***************************************
 
 void mainReportes()
@@ -32,66 +33,67 @@ void mainReportes()
         inputSelection = selectionMaps::g_reportesMap.startSelection(true);
         switch (inputSelection)
         {
-        case 1:
+        case 1: // Crear Reporte de Uso
             do
-            {   // ************************************** Operacion: Crear Reporte de Uso **************************************
+            {
                 printRectangle({ 49,9 }, 98, 32, color::dBlack);
 
                 int idSelector{ selectComputer(g_registroComputadoras,{52,11},8,4) };
                 if (!idSelector) break;
-                // Computer Info & Operations
+
                 DoubleList<Computadora>::Node* node{ g_registroComputadoras.getAt(idSelector - 1) };
                 if (!node) break;  // Validar puntero nulo
 
                 Computadora& target = node->data; // Acceso directo al objeto
 
                 printRectangle({ 49,9 }, 98, 32, color::dBlack);
-                // Elegir entre crear archivo o volver
                 printFormat(formattedText::Elements::computerInfo, { 78,15 }, color::dBlack, color::dBlue);
-                mostrarInformacionComputadora(node, { 78,19 }); // Cambié a pasar el nodo, no el objeto
+                mostrarInformacionComputadora(node, { 78,19 });
 
                 selectionMaps::g_reportesConfirmationMap.printAll();
                 int createTxtQuestion{ selectionMaps::g_reportesConfirmationMap.startSelection(true) };
                 if (createTxtQuestion == 2) continue;
-                // Crear Archivo .txt
+
+                // Crear Reporte
                 generarReporteUsoTxt(&target, g_registroSesiones);
                 printRectangle({ 49,9 }, 98, 32, color::dBlack);
-                gotoCOORD({ 85,24 }); printColor("Reporte generado exitosamente...", color::bYellow);
+                gotoCOORD({ 75,24 }); printColor("Reporte de uso generado exitosamente en carpeta correspondiente.", color::bYellow);
 
                 break;
             } while (1);
             break;
 
-        case 2:
-        {   // ************************************** Operacion: Crear Reporte de Ingresos **************************************
-            printRectangle({ 49,9 }, 98, 32, color::dBlack);
+        case 2: // Crear Reporte de Ingresos
+            do
+            {
+                printRectangle({ 49,9 }, 98, 32, color::dBlack);
 
-            int idSelector{ selectComputer(g_registroComputadoras,{52,11},8,4) };
-            if (!idSelector) break;
-            // Computer Info & Operations
-            DoubleList<Computadora>::Node* node{ g_registroComputadoras.getAt(idSelector - 1) };
-            if (!node) break;  // Validar puntero nulo
+                int idSelector{ selectComputer(g_registroComputadoras,{52,11},8,4) };
+                if (!idSelector) break;
 
-            Computadora& target = node->data; // Acceso directo al objeto
+                DoubleList<Computadora>::Node* node{ g_registroComputadoras.getAt(idSelector - 1) };
+                if (!node) break;  // Validar puntero nulo
 
-            printRectangle({ 49,9 }, 98, 32, color::dBlack);
-            // Elegir entre crear archivo o volver
-            printFormat(formattedText::Elements::computerInfo, { 78,15 }, color::dBlack, color::dBlue);
-            mostrarInformacionComputadora(node, { 78,19 }); // Cambié a pasar el nodo, no el objeto
+                Computadora& target = node->data; // Acceso directo al objeto
 
-            selectionMaps::g_reportesConfirmationMap.printAll();
-            int createTxtQuestion{ selectionMaps::g_reportesConfirmationMap.startSelection(true) };
-            if (createTxtQuestion == 2) continue;
-            // Crear Archivo .txt
-            generarReporteIngresosTxt(&target, g_registroSesiones);
-            printRectangle({ 49,9 }, 98, 32, color::dBlack);
-            gotoCOORD({ 85,24 }); printColor("Reporte generado exitosamente...", color::bYellow);
+                printRectangle({ 49,9 }, 98, 32, color::dBlack);
+                printFormat(formattedText::Elements::computerInfo, { 78,15 }, color::dBlack, color::dBlue);
+                mostrarInformacionComputadora(node, { 78,19 });
 
+                selectionMaps::g_reportesConfirmationMap.printAll();
+                int createTxtQuestion{ selectionMaps::g_reportesConfirmationMap.startSelection(true) };
+                if (createTxtQuestion == 2) continue;
+
+                // Crear Reporte
+                generarReporteIngresosTxt(&target, g_registroSesiones);
+                printRectangle({ 49,9 }, 98, 32, color::dBlack);
+                gotoCOORD({ 75,24 }); printColor("Reporte de ingresos generado exitosamente en carpeta correspondiente.", color::bYellow);
+
+                break;
+            } while (1);
             break;
-        } while (1);
-        break;
 
-        case 3:
+        case 3: // Salir
             continueSelection = false;
             break;
         }
@@ -101,9 +103,19 @@ void mainReportes()
     printColor(menuDefs::background, color::dBlack, color::bBlack);
 }
 
+
+
 // Generar reporte de uso en archivo .txt
 void generarReporteUsoTxt(Computadora* comp, SingleList<Sesion>& sesiones) {
-    std::string filename = "ReporteUso_" + std::to_string(comp->ID) + ".txt";
+    // Rutas de carpetas
+    std::string basePath = "Reportes/ReporteDeUsos/";
+    std::string folderPath = basePath + "Computadora_" + std::to_string(comp->ID);
+
+    // Crear carpetas si no existen
+    std::filesystem::create_directories(folderPath);
+
+    // Crear archivo en la carpeta correspondiente
+    std::string filename = folderPath + "/ReporteUso_" + std::to_string(comp->ID) + ".txt";
     std::ofstream file(filename);
 
     if (file.is_open()) {
@@ -129,10 +141,17 @@ void generarReporteUsoTxt(Computadora* comp, SingleList<Sesion>& sesiones) {
     }
 }
 
-
 // Generar reporte de ingresos en archivo .txt
 void generarReporteIngresosTxt(Computadora* comp, SingleList<Sesion>& sesiones) {
-    std::string filename = "ReporteIngresos_" + std::to_string(comp->ID) + ".txt";
+    // Rutas de carpetas
+    std::string basePath = "Reportes/ReporteDeIngresos/";
+    std::string folderPath = basePath + "Computadora_" + std::to_string(comp->ID);
+
+    // Crear carpetas si no existen
+    std::filesystem::create_directories(folderPath);
+
+    // Crear archivo en la carpeta correspondiente
+    std::string filename = folderPath + "/ReporteIngresos_" + std::to_string(comp->ID) + ".txt";
     std::ofstream file(filename);
 
     if (file.is_open()) {
@@ -156,4 +175,3 @@ void generarReporteIngresosTxt(Computadora* comp, SingleList<Sesion>& sesiones) 
         file.close();
     }
 }
-

@@ -44,44 +44,31 @@ int main()
             printMainMenu();        // Reimprimir toda la ventana principal
 
             break;
-        case 2: // ************* OPCION 2 : GESTION DE SESIONES
-
-            clearMainWindow();      // Funcion para limpiar la pantalla
-            mainGestionSesiones();  // FUNCION PRINCIPAL
-            _getch();               // Pausar la Consola
-            printMainMenu();        // Reimprimir toda la ventana principal
-
-            break;
-        case 3: // ************* OPCION 2 : GESTION DE SESIONES
+  
+        case 2: // ************* OPCION 3 : SIMULACIÓN DE SESIONES  DICE GESTIONCLIENTES PERO EN REALIDAD ES UN SIMULADOR
 
             clearMainWindow();      // Funcion para limpiar la pantalla
             mainGestionClientes();  // FUNCION PRINCIPAL
             printMainMenu();        // Reimprimir toda la ventana principal
 
             break;
-        case 4: // ************* OPCION 4 : FACTURACION
-
-            clearMainWindow();      // Funcion para limpiar la pantalla
-            mainFacturacion();      // FUNCION PRINCIPAL
-            _getch();               // Pausar la Consola
-            printMainMenu();        // Reimprimir toda la ventana principal
-
-            break;
-        case 5: // ************* OPCION 5 : RESERVAS
+      
+         
+        case 3: // ************* OPCION 5 : RESERVAS
 
             clearMainWindow();      // Funcion para limpiar la pantalla
             mainReservas();         // FUNCION PRINCIPAL
             printMainMenu();        // Reimprimir toda la ventana principal
 
             break;
-        case 6: // ************* OPCION 6 : REPORTES
+        case 4: // ************* OPCION 6 : REPORTES
 
             clearMainWindow();      // Funcion para limpiar la pantalla
             mainReportes();         // FUNCION PRINCIPAL
             printMainMenu();        // Reimprimir toda la ventana principal
 
             break;
-        case 7: // ************* OPCION 7 : SALIR DEL PROGRAMA
+        case 5: // ************* OPCION 7 : SALIR DEL PROGRAMA
             clearMainWindow();
             printCOORD("Gracias por usar el programa", { 67,23 });
             printCOORD("Pulse cualquier tecla para continuar...", { 62,24 });

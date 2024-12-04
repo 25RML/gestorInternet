@@ -246,42 +246,39 @@ void mainGestionClientes()
 
 // *********************************** AGREGADO PARA N4 ***********************************
 
-#ifdef ADDED_PARTS
 
-bool verificarConflicto(const Sesion& nuevaSesion, ReservaNode* colaReservas) {
-    if (!colaReservas) {
-        // No hay reservas, no hay conflicto.
-        return true;
+bool VerificarConflicto(const Fecha& fechaSesion, const Hora& horaInicioSesion, const Hora& horaFinSesion, const Computadora& computadora) {
+
+    SingleList<Reserva>::Node* nodoActual = computadora.colaReservas.head;// Obtener la cabeza de la lista de reservas de la computadora
+
+    while (nodoActual) { // Recorrer la lista de reservas mientras haya reservas
+        const Reserva& reserva = nodoActual->data; // Obtener los datos de la reserva actual
+
+        if (fechaSesion.year == reserva.fecha.year && fechaSesion.month == reserva.fecha.month && fechaSesion.day == reserva.fecha.day) {
+
+            bool hayConflicto = false; // Inicialización de variable la variable para detectar conflicto
+
+            if (horaInicioSesion.hour < reserva.horaFinal.hour ||  // La sesión empieza antes de que la reserva termine
+                (horaInicioSesion.hour == reserva.horaFinal.hour && horaInicioSesion.minute < reserva.horaFinal.minute)) {
+
+                if (horaFinSesion.hour > reserva.horaInicio.hour ||  // La sesión termina después de que la reserva empieza
+                    (horaFinSesion.hour == reserva.horaInicio.hour && horaFinSesion.minute > reserva.horaInicio.minute)) {
+
+                    hayConflicto = true; // Se detectó un conflicto
+                }
+            }
+
+            if (hayConflicto) { // Si hay conflicto, no se puede crear la sesión
+                return false; // Retorna false indicando que hay un conflicto
+            }
+        }
+
+        nodoActual = nodoActual->next; // Pasar al siguiente nodo de la lista
     }
 
-    // Buscar la reserva más reciente.
-    ReservaNode* reservaReciente = colaReservas;
-    while (reservaReciente->next) {
-        reservaReciente = reservaReciente->next;
-    }
+    return true; // Si no hay conflicto, retornar true
 
-    // Verificar conflicto con la reserva más reciente.
-    const Sesion& ultimaReserva = reservaReciente->reserva;
-    if (nuevaSesion.fecha.year != ultimaReserva.fecha.year ||
-        nuevaSesion.fecha.month != ultimaReserva.fecha.month ||
-        nuevaSesion.fecha.day != ultimaReserva.fecha.day) {
-        // Las fechas no coinciden, no hay conflicto.
-        return true;
-    }
-
-    // Comprobar colisión de horarios.
-    if (nuevaSesion.horaInicio.hour < ultimaReserva.horaSalida.hour ||
-        (nuevaSesion.horaInicio.hour == ultimaReserva.horaSalida.hour &&
-            nuevaSesion.horaInicio.minute < ultimaReserva.horaSalida.minute)) {
-        return false; // Hay conflicto de horarios.
-    }
-
-    return true; // No hay conflicto.
 }
-
-#endif // !ADDED_PARTS
-
-
 
 
 

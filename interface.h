@@ -97,17 +97,10 @@ namespace formattedText
         " \033[C                                              \033[C ",
         " \033[C             Gestion de Computadoras          \033[C ",
         " \033[C                                              \033[C " };
-    constexpr std::string_view gestionDeSesiones[3]{
-        " \033[C                                              \033[C ",
-        " \033[C     Gestion de Clientes (Sin terminar)       \033[C ",
-        " \033[C                                              \033[C " };
+ 
     constexpr std::string_view gestionDeClientes[3]{
         " \033[C                                              \033[C ",
         " \033[C            Simulacion de Sesiones            \033[C ",
-        " \033[C                                              \033[C " };
-    constexpr std::string_view facturacion[3]{
-        " \033[C                                              \033[C ",
-        " \033[C                 Facturacion                  \033[C ",
         " \033[C                                              \033[C " };
     constexpr std::string_view reservas[3]{
         " \033[C                                              \033[C ",
