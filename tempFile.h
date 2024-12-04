@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <chrono>
 
 /*================================================================================================================================================================
                         STRUCTS
@@ -22,7 +23,7 @@ struct Hora
         minute += tiempoHoras.minute;
         hour += tiempoHoras.hour;
 
-        short hourPass{ minute /= 60 };
+        short hourPass{ static_cast<short>(minute / 60) };
         minute %= 60;
         hour += hourPass;
 
@@ -64,7 +65,7 @@ struct DoubleList
 
     Node* head{};
 
-    // ******************* FUNCTIONS *******************
+    // ******* FUNCTIONS *******
     Node* createEntry(const T& data) const
     {
         Node* newNode{ new Node };
@@ -162,8 +163,7 @@ struct SingleList
         Node* next{};
     };
     Node* head{};
-    //Node* traverser{ head };
-    // ******************* FUNCTIONS *******************
+    // ******* FUNCTIONS *******
     Node* createEntry(const T& data) const
     {
         Node* newNode{ new Node };
@@ -250,7 +250,7 @@ struct SingleList
             delete(reserve);
             return;
         }
-        Node* reserve{ getAt(pos-1) };
+        Node* reserve{ getAt(pos - 1) };
         if (!(reserve->next)) return; // Does not exist
         Node* deleteTarget{ reserve->next };
         reserve->next = deleteTarget->next;
@@ -276,23 +276,6 @@ struct Reserva
     Hora horaFinal{};
 };
 
-struct Computadora
-{
-    int ID;                                 // ID de la computadora
-    float modificadorDePrecio{};            // Valor decimal que modifica la tarifa general del servicio (default = 1.0)
-    std::string componentes[4]{};           // Agregado... no tiene ningun uso importante dentro del programa, quiza deberia ir en memoria externa y no en interna
-    int estado{0};                          // Estado del computadora, quiza se cambie a int, 0: Libre, 1: Ocupada, 2: Reservada, 3: No Disponible (mantenimiento y otros)
-    int tiempoDeUsoTotalSegundos{};         // Tiempo de uso total de la maquina (en segundos)
-    SingleList<Reserva> colaReservas{};     // Lista simplemente enlazada (cola) de las reservas para esta maquina
-
-};
-struct Cliente
-{
-    std::string nombre{};   // Nombre
-    int ID{};               // Solo si esta registrado en el "sistema", de otra forma = 0 (false)
-    int totalHoras{};       // Solo si ID es (true), registra el numero total de horas del cliente en el servicio
-    int gastoTotal{};       // Solo si ID es (true), registra el gasto total del cliente en el servicio
-};
 struct Sesion
 {
     int idComputadora{};    // ID de la computadora siendo usada
@@ -302,6 +285,27 @@ struct Sesion
     Fecha fecha{};
     double costo{};
 };
+
+struct Computadora
+{
+    int ID;                                 // ID de la computadora
+    float modificadorDePrecio{};            // Valor decimal que modifica la tarifa general del servicio (default = 1.0)
+    std::string componentes[4]{};           // Componentes de la computadora
+    int estado{ 0 };                          // Estado de la computadora, 0: Libre, 1: Ocupada, 2: Reservada, 3: No Disponible (mantenimiento y otros)
+    int tiempoDeUsoTotalSegundos{};         // Tiempo de uso total de la maquina (en segundos)
+    SingleList<Reserva> colaReservas{};     // Lista simplemente enlazada (cola) de las reservas para esta maquina
+    Sesion* sesionActiva{ nullptr };        // Puntero a la sesión activa
+    std::chrono::steady_clock::time_point tiempoInicioReal{}; // Tiempo real de inicio de la sesión
+};
+
+struct Cliente
+{
+    std::string nombre{};   // Nombre
+    int ID{};               // Solo si esta registrado en el "sistema", de otra forma = 0 (false)
+    int totalHoras{};       // Solo si ID es (true), registra el numero total de horas del cliente en el servicio
+    int gastoTotal{};       // Solo si ID es (true), registra el gasto total del cliente en el servicio
+};
+
 /*================================================================================================================================================================
                         FUNCTIONS
 ================================================================================================================================================================*/
