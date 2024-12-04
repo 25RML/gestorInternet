@@ -298,7 +298,7 @@ struct Computadora
 
 struct Cliente
 {
-    std::string nombre{};   // Nombre
+    std::string nombre{};   // Nombree
     int ID{};               // Solo si esta registrado en el "sistema", de otra forma = 0 (false)
     int totalHoras{};       // Solo si ID es (true), registra el numero total de horas del cliente en el servicio
     int gastoTotal{};       // Solo si ID es (true), registra el gasto total del cliente en el servicio

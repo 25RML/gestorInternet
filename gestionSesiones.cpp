@@ -111,7 +111,7 @@ void cargarSesiones(bool resetBoot)
             // Insertar la sesión en la lista
             g_registroSesiones.append(g_registroSesiones.createEntry(toAdd));
 
-            // Reiniciar la sesión y el paso
+            // Reeiniciar la sesión y el paso
             toAdd = Sesion();
             count = 0;
             break;

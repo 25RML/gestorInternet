@@ -312,7 +312,7 @@ void mainGestionClientes()
                         guardarSesiones(); // Implementar la llamada para guardar inmediatamente
 
                         sessionFound = true;
-                        break; // Salir del bucle después de terminar la sesión
+                        break; // Saalir del bucle después de terminar la sesión
                     }
                     else
                     {
